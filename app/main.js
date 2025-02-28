@@ -4,7 +4,7 @@
  */
 import heartScore from "./src/HeartScore.js";
 
-const IN_CONSOLE = true;
+const IN_CONSOLE = true; // change this to false 
 
 let cleanUp;
 let promptSync;
