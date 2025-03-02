@@ -1,14 +1,12 @@
-// importing in a weird way because of EJS vs CJS issues
-// promptSync used for terminal, prompt used for browser based console
-const promptSync = (await import('prompt-sync')).default;
-const prompt = promptSync({sigint: true});
+import { setupEnvironment } from "./setup.js";
 
 /** 
  * Simulates HEART Score pathway
  * 
  * @return {string} ACSRisk value as "high", "intermediate", or "low" as a string.
 */
-export default function HeartScore() {
+export default async function HeartScore() {
+    const { prompt } = await setupEnvironment();
 
     console.log("The HEART Score Pathway begins below.");
     console.log();

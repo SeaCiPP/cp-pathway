@@ -3,25 +3,10 @@
  * and application.
  */
 import heartScore from "./src/HeartScore.js";
+import { setupEnvironment } from "./src/setup.js";
 
-const IN_CONSOLE = true; // change this to false 
-
-let cleanUp;
-let promptSync;
-let prompt;
-
-if (IN_CONSOLE) {
-    cleanUp = () => {setTimeout(() => { process.exit(1); }, 1000);};
-    // importing in a weird way because of EJS vs CJS issues
-    // promptSync used for terminal, prompt used for browser based console
-    promptSync = (await import('prompt-sync')).default;
-    prompt = promptSync({sigint: true});
-} else {
-    cleanUp = () => {
-        alert("Exiting, and will refresh.");
-        location.reload();
-    };
-}
+// cleanUp delays exiting for 1 second
+const { cleanUp, prompt } = await setupEnvironment();
 
 console.log("Press CTRL + C to exit console at any time.");
 console.log("This is a prototype of the updated algorithm for the UWMC ED Pathway.")
@@ -49,7 +34,7 @@ if (isAcute) {
 
         if (isSTEMI) {
             console.log("Follow STEMI guidelines for institution. Exiting . . .");
-            cleanUp();
+            await cleanUp();
         }
         
         // isPostCardiac is true if answer is yes/there was sudden cardiac death.
@@ -61,18 +46,18 @@ if (isAcute) {
             console.log("Decision tool not meant to guide post cardiac arrest care.");
             console.log("Please refer to dedicated guidelines.");
             console.log("Exiting . . .");
-            cleanUp();
+            await cleanUp();
         }
 
         
 
     } else { // if non-cardiac
         console.log("Evaluate for non-cardiac causes. Exiting . . .");
-        cleanUp();
+        await cleanUp();
     }
 } else { // if stable, needs to be filled in
     console.log("Starting the Stable Branch. Exiting . . .");
-    cleanUp();
+    await cleanUp();
 }
 
 
