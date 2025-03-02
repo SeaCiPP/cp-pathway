@@ -49,8 +49,18 @@ if (isAcute) {
             await cleanUp();
         }
 
-        
+        // if program reaches this point it means the above two conditions are not met
+        // and we need more testing
+        let isNSTEACS = prompt("Is there Non ST-elevation acute coronary syndrome? (y/n) -- ").toLowerCase()[0] === 'y';
+        console.log();
 
+        if (isNSTEACS) {
+            
+        } else {
+            console.log("Evaluate for acute aortic syndrome, PE, acute myopericarditis, or valvular heart disease.");
+            console.log("Exiting . . .");
+            await cleanUp();
+        }
     } else { // if non-cardiac
         console.log("Evaluate for non-cardiac causes. Exiting . . .");
         await cleanUp();
@@ -59,6 +69,3 @@ if (isAcute) {
     console.log("Starting the Stable Branch. Exiting . . .");
     await cleanUp();
 }
-
-
-heartScore();
