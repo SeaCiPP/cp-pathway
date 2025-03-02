@@ -1,4 +1,26 @@
 {
+  "name": "cp-pathway",
+  "version": "1.0.0",
+  "description": "Chest Pain Pathway App",
+  "main": "./app/main.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeaCiPP/cp-pathway.git"
+  },
+  "keywords": [
+    "Chest",
+    "Pain"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SeaCiPP/cp-pathway/issues"
+  },
+  "homepage": "https://github.com/SeaCiPP/cp-pathway#readme",
   "dependencies": {
     "prompt-sync": "^4.2.0"
   }
