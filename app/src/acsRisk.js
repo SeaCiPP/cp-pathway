@@ -1,6 +1,11 @@
 import { setupEnvironment } from "./setup.js";
 import heartScore from "./HeartScore.js";
 
+/**
+ * Allows users to choose what risk stratification algorithm to use
+ * 
+ * @returns a reference to a function that simulates the stratification algorithm.
+ */
 export default async function acsRisk() {
     const { prompt } = await setupEnvironment();
     console.log("Please select the ACS risk stratification algorithm:")
