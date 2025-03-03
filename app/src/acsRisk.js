@@ -1,5 +1,7 @@
 import { setupEnvironment } from "./setup.js";
 import heartScore from "./HeartScore.js";
+import escScore from "./escScore.js";
+import graceScore from "./graceScore.js";
 
 /**
  * Allows users to choose what risk stratification algorithm to use
@@ -20,11 +22,9 @@ export default async function acsRisk() {
     if (pathway == "HEART Score" || pathway == 1) {
         riskPathway = heartScore;
     } else if (pathway == "ESC 0/1-Hour" || pathway == 2) {
-        // replace with escAlg();
-        riskPathway = heartScore;
+        riskPathway = escScore;
     } else if (pathway == "ESC/Grace" || pathway == 3) {
-        // replace with escGrace();
-        riskPathway = heartScore;
+        riskPathway = graceScore;
     }
 
     return riskPathway;
