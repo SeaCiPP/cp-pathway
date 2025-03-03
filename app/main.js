@@ -4,6 +4,7 @@
  */
 import heartScore from "./src/HeartScore.js";
 import { setupEnvironment } from "./src/setup.js";
+import acsRisk from "./src/acsRisk.js";
 
 // cleanUp delays exiting for 1 second
 const { cleanUp, prompt } = await setupEnvironment();
@@ -55,7 +56,25 @@ if (isAcute) {
         console.log();
 
         if (isNSTEACS) {
-            
+            let riskPathway = await acsRisk();
+            let riskStratification = await riskPathway();
+            switch (riskStratification) {
+                case "high":
+                    console.log("Page cardiology for admission.");
+                    console.log("Exiting . . .");
+                    await cleanUp();
+                    break;
+                case "intermediate":
+                    // needs to be replaced
+                    console.log("intermediate");
+                    await cleanUp();
+                    break;
+                case "low":
+                    console.log("No testing required.");
+                    console.log("Exiting . . .");
+                    await cleanUp();
+                    break;
+            }
         } else {
             console.log("Evaluate for acute aortic syndrome, PE, acute myopericarditis, or valvular heart disease.");
             console.log("Exiting . . .");

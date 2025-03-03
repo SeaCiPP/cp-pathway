@@ -13,7 +13,7 @@ export default async function HeartScore() {
 
     // Determine HistoryPoints
     let historyPoints;
-    console.log("Please select the history level:")
+    console.log("Please select the history level:");
     console.log("\t 1. Slightly Suspicious");
     console.log("\t 2. Moderately Suspicious");
     console.log("\t 3. Highly Suspicious");
@@ -29,7 +29,7 @@ export default async function HeartScore() {
 
     // Determine EKGPoints
     let ekgPoints;
-    console.log("Please select EKG Outcome:")
+    console.log("Please select EKG Outcome:");
     console.log("\t 1. Normal");
     console.log("\t 2. Non-specific repolarization disturbance");
     console.log("\t 3. Significant ST depression");
