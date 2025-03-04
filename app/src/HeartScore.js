@@ -8,15 +8,11 @@ import { setupEnvironment } from "./setup.js";
 export default async function HeartScore() {
     const { prompt } = await setupEnvironment();
 
-    console.log("The HEART Score Pathway begins below.");
-    console.log();
+    alert("The HEART Score Pathway begins below.");
 
     // Determine HistoryPoints
     let historyPoints;
-    console.log("Please select the history level:");
-    console.log("\t 1. Slightly Suspicious");
-    console.log("\t 2. Moderately Suspicious");
-    console.log("\t 3. Highly Suspicious");
+    alert(`Please select the history level: 1. Slightly Suspicious, 2. Moderately Suspicious, 3. Highly Suspicious`);
     let history = prompt("Enter the number of your choice (1, 2, or 3): ");
     console.log()
     if (history == "Slightly Suspicious" || history == 1) {
@@ -29,10 +25,7 @@ export default async function HeartScore() {
 
     // Determine EKGPoints
     let ekgPoints;
-    console.log("Please select EKG Outcome:");
-    console.log("\t 1. Normal");
-    console.log("\t 2. Non-specific repolarization disturbance");
-    console.log("\t 3. Significant ST depression");
+    alert(`Please select EKG Outcome: 1. Normal, 2. Non-specific repolarization disturbance, 3. Significant ST depression.`);
     let ekg = prompt("Enter the number of your choice (1, 2, or 3): ");
     console.log();
     if (ekg == "Normal" || ekg == 1) {
@@ -92,7 +85,7 @@ export default async function HeartScore() {
         ACSRisk = "low";
     }
 
-    console.log(`ACS risk determined to be ${ACSRisk}.`);
+    alert(`ACS risk determined to be ${ACSRisk}.`);
 
     return ACSRisk;
 }

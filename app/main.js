@@ -9,10 +9,7 @@ import acsRisk from "./src/acsRisk.js";
 // cleanUp delays exiting for 1 second
 const { cleanUp, prompt } = await setupEnvironment();
 
-console.log("Press CTRL + C to exit console at any time.");
-console.log("This is a prototype of the updated algorithm for the UWMC ED Pathway.")
-console.log("Please order a troponin and ECG.")
-console.log();
+alert(`Press CTRL + C to exit console at any time. This is a prototype of the updated algorithm for the UWMC ED Pathway. Please order a troponin and ECG.`);
 
 // isAcute is true if answer/acute chest pain is yes.
 // Tests for acute chest pain or stable chest pain.
@@ -34,7 +31,7 @@ if (isAcute) {
         console.log();
 
         if (isSTEMI) {
-            console.log("Follow STEMI guidelines for institution. Exiting . . .");
+            alert("Follow STEMI guidelines for institution. Exiting . . .");
             await cleanUp();
         }
         
@@ -44,9 +41,7 @@ if (isAcute) {
         console.log();
 
         if (isPostCardiac) {
-            console.log("Decision tool not meant to guide post cardiac arrest care.");
-            console.log("Please refer to dedicated guidelines.");
-            console.log("Exiting . . .");
+            alert(`Decision tool not meant to guide post cardiac arrest care. Please refer to dedicated guidelines. Exiting . . .`);
             await cleanUp();
         }
 
@@ -60,31 +55,28 @@ if (isAcute) {
             let riskStratification = await riskPathway();
             switch (riskStratification) {
                 case "high":
-                    console.log("Page cardiology for admission.");
-                    console.log("Exiting . . .");
+                    alert("Page cardiology for admission. Exiting . . .");
                     await cleanUp();
                     break;
                 case "intermediate":
                     // needs to be replaced
-                    console.log("intermediate");
+                    alert("intermediate");
                     await cleanUp();
                     break;
                 case "low":
-                    console.log("No testing required.");
-                    console.log("Exiting . . .");
+                    alert("No testing required. Exiting . . .");
                     await cleanUp();
                     break;
             }
         } else {
-            console.log("Evaluate for acute aortic syndrome, PE, acute myopericarditis, or valvular heart disease.");
-            console.log("Exiting . . .");
+            alert("Evaluate for acute aortic syndrome, PE, acute myopericarditis, or valvular heart disease. Exiting . . .");
             await cleanUp();
         }
     } else { // if non-cardiac
-        console.log("Evaluate for non-cardiac causes. Exiting . . .");
+        alert("Evaluate for non-cardiac causes. Exiting . . .");
         await cleanUp();
     }
 } else { // if stable, needs to be filled in
-    console.log("Starting the Stable Branch. Exiting . . .");
+    alert("Starting the Stable Branch. Exiting . . .");
     await cleanUp();
 }
