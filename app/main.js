@@ -2,10 +2,9 @@
  * This file contains the main flow and functionality of the script
  * and application.
  */
-import heartScore from "./src/HeartScore.js";
-import { setupEnvironment } from "./src/setup.js";
-import acsRisk from "./src/acsRisk.js";
 
+import acsRisk from "./src/acsRisk.js";
+import { setupEnvironment } from "./src/setup.js";
 // cleanUp delays exiting for 1 second
 const { cleanUp, prompt } = await setupEnvironment();
 
