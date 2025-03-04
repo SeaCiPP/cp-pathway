@@ -6,7 +6,7 @@ export async function setupEnvironment() {
     let cleanUp;
     let prompt;
 
-    const IN_CONSOLE = true; // change this to false 
+    const IN_CONSOLE = false; // change this to false 
 
     if (IN_CONSOLE) {
         cleanUp = async () => { 
