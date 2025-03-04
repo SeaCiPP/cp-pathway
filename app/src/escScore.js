@@ -34,9 +34,9 @@ export default async function escScore() {
     let assayRow = assayValues[assay - 1];
 
     // Determine hs-cTnI or hs-cTnT
-    let zeroHour = console.log("Input initial troponin level (ng/L).");
-    let oneHour = console.log("Input troponin level (ng/L) after one hour.");
-    let onset = console.log("Input the time elapsed since chest pain onset, rounded to the nearest hour.");
+    let zeroHour = prompt("Input initial troponin level (ng/L).");
+    let oneHour = prompt("Input troponin level (ng/L) after one hour.");
+    let onset = prompt("Input the time elapsed since chest pain onset, rounded to the nearest hour.");
     let dif = oneHour - zeroHour;
     let ACSRisk;
 
