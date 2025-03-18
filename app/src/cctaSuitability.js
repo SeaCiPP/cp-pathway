@@ -8,12 +8,10 @@ export default async function cctaSuitability() {
     const { prompt } = await setupEnvironment();
 
     let isCCTASuitable = true;
-    let isPriorInconclusive = prompt("Has there been a prior inconclusive coronary CTA? (y/n) -- ").toLowerCase()[0] === 'y';
     console.log();
-    let isConditionMet = prompt("Do any of the following conditions apply: BMI >40, Acute Kidney Injury, eGFR <30, inability to lower heart rate to <65, difficulty holding breath for 10 seconds, irregular heart rate (frequent PACs, PVCs, Afib), or a known calcium score >1000? (y/n) -- ").toLowerCase()[0] === 'y';
+    let isConditionMet = prompt("Are any of the following conditions unmet: Age < 80, eGFR > 30, able to perform breath-hold for ~10 seconds, absence of frequenty ectopy/irregular heart rate (PACs/PVCs), no contraindications to lowering HR with beta blockers (HR < 60bpm), absence of contrast allergy? (y/n) -- ").toLowerCase()[0] === 'y';
     console.log();
-
-    if (isPriorInconclusive || isConditionMet) {
+    if (isConditionMet) {
         isCCTASuitable = false;
     }
     return isCCTASuitable;

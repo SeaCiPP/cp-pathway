@@ -1,4 +1,5 @@
 import { setupEnvironment } from "./setup.js";
+import heartScore from "./HeartScore.js";
 
 /** 
  * Simulates ESC 0/1 hr hs-cTn pathway
@@ -11,42 +12,43 @@ export default async function escScore() {
     console.log("The ESC 0/1 Hour Pathway begins below.");
     console.log();
 
-    // Select relevant test
-    console.log("Please select the assay used for determining high-sensitivity cardiac troponin T or I value.")
-    console.log("\t 1. Roche Elecys hs-cTnT");
-    console.log("\t 2. Abbott Architect hs-cTnI");
-    console.log("\t 3. Beckman Coulter Access hs-cTnI");
-    console.log("\t 4. Siemens ADVIA Centaur hs-cTnI");
-    console.log("\t 5. Siemens Atellica hs-cTnI");
-    console.log("\t 6. Siemens Dimension Vista hs-cTnI");
-    let assay = prompt("Enter the number of your choice (1, 2, 3, 4, 5, or 6): ");
+    console.log("Please refer to the assay used for classifying high-sensitivity cardiac troponin values.");
+    console.log("NOTE: Renal dysfunction patients with chronic kidney disease may have elevated cTn at baseline.");
+    console.log("Either refer to prior test values, or focus on changes in troponin over time.");
+    console.log();
 
-    // LoQ, A, B, C, D
-    let assayValues = [
-        [6, 12, 3, 52, 5]
-        [4, 5, 2, 52, 6]
-        [3, 5, 4, 50, 15]
-        [3, 6, 3, 120, 12]
-        [3, 6, 3, 120, 12]
-        [3, 5, 2, 107, 19]
-    ];
-
-    let assayRow = assayValues[assay - 1];
-
-    // Determine hs-cTnI or hs-cTnT
-    let zeroHour = prompt("Input initial troponin level (ng/L).");
-    let oneHour = prompt("Input troponin level (ng/L) after one hour.");
-    let onset = prompt("Input the time elapsed since chest pain onset, rounded to the nearest hour.");
-    let dif = oneHour - zeroHour;
-    let ACSRisk;
-
-    // Determine ACS Risk
-    if ((onset > 3 && zeroHour < assayRow[0]) || (zeroHour < assayRow[1] && dif < assayRow[2])) {
-        ACSRisk = "low";
-    } else if ((zeroHour >= assayRow[3] || oneHour >= assayRow[3]) || dif >= assayRow[4]) {
+    // Time Zero hs-cTn
+    let timeZero = prompt("Input initial troponin level.");
+    if (timeZero == "High") {
         ACSRisk = "high";
-    } else { // Other results
-        ACSRisk = "intermediate";
+        console.log(`ACS risk determined to be ${ACSRisk}.`);
+        return ACSRisk;
+    } else if (timeZero == "Very Low") {
+        let symptomDur = prompt("Has the patient been experiencing symptoms for over three hours? (y/n) -- ").toLowerCase()[0] === 'y';
+        if (symptomDur) {
+            ACSRisk = "low";
+            console.log(`ACS risk determined to be ${ACSRisk}.`);
+            return ACSRisk;
+        }
+    }
+    // all other, or if patient has not been experiencing symptoms for over three hours
+    // Time One hs-cTn
+    let timeOne = prompt("Input troponin level after one hour.");
+    let changeOne = prompt("Input the significance of thechange in troponin level over the past hour.");
+    if (timeOne == "Low" && changeOne == "Insignificant") {
+        ACSRisk = "low";
+    } else if (changeOne == "Significant") {
+        ACSRisk = "high";
+    } else { // all other
+        // Time Three hs-cTn
+        let timeThree = prompt("Input troponin level after three hours.");
+        let changeThree = prompt("Input the significance of the change in troponin level over the past three hours.");
+        if (timeThree == "High" || changeThree == "Significant") {
+            ACSRisk = "high";
+        } else if (change == "Insignificant") {
+            // perform heart score
+            ACSRisk = await heartScore();
+        }
     }
 
     console.log(`ACS risk determined to be ${ACSRisk}.`);

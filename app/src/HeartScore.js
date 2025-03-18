@@ -70,6 +70,7 @@ export default async function HeartScore() {
     // Determine TroponinPoints
     let troponinPoints;
     let troponin = prompt("Enter Troponin Levels (ng/ml): ");
+    let troponinPer = prompt(" Are serial troponins below the 99th percentile? (y/n) -- ").toLowerCase()[0] === 'y';
     console.log();
     if (troponin < 0.04) {
         troponinPoints = 0;
@@ -86,9 +87,9 @@ export default async function HeartScore() {
     let ACSRisk;
     if (totalScore >= 7) {
         ACSRisk = "high";
-    } else if ((totalScore >= 4 && totalScore < 7) || troponinPoints >= 1) {
+    } else if (totalScore >= 4 && totalScore < 7) {
         ACSRisk = "intermediate";
-    } else {
+    } else if (totalScore < 3 && troponinPer){
         ACSRisk = "low";
     }
 
