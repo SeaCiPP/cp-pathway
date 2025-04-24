@@ -41,7 +41,7 @@
   color: #888;
 }
 
-/*.riskFactors {
+.riskFactors {
   column-count: 2;
   column-gap:0px;
   text-align: left;
@@ -50,4 +50,3 @@
 .riskFactors legend{
   text-align: center;
 }
-*/
