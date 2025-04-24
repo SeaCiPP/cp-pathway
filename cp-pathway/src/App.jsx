@@ -42,7 +42,7 @@ function HeartPath() {
                         'History of atherosclerotic disease',
                         'Peripheral Artery Disease',
                         'Obstructive CAD',
-                        'Non-obstructive CAD',];
+                        'Non-obstructive CAD'];
 
   return (
     <>

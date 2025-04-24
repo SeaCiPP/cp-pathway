@@ -39,17 +39,8 @@ export default Checkboxes;
 
 
 {/* EXAMPLE IMPLEMENTATION
-  const checkTitle = 'Risk Factors';
-  const checkOptions = ['Hypercholesterolemia',
-                        'Hypertension',
-                        'Diabetes Mellitus',
-                        'Obesity (BMI > 30kg/m^2)',
-                        'Smoking History (>3mo usage)',
-                        'Family History of CVD',
-                        'History of atherosclerotic disease',
-                        'Peripheral Artery Disease',
-                        'Obstructive CAD',
-                        'Non-obstructive CAD',];
+  const checkTitle = 'Sample Checkbox Title';
+  const checkOptions = ['A', 'B', 'C', 'D', 'E'];
 
   return (
     <>
