@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./heart-path-desk.css";
 import SegmentedButton from "./segmented-button.jsx";
+import Checkboxes from "./checkboxes.jsx";
 
 function HeartPath() {
   const cad = useState(true)
@@ -30,6 +31,19 @@ function HeartPath() {
     console.log('Selected age:', value);
   };
 
+  // Risk Factor Checkbox List
+  const checkTitle = 'Risk Factors';
+  const checkOptions = ['Hypercholesterolemia',
+                        'Hypertension',
+                        'Diabetes Mellitus',
+                        'Obesity (BMI > 30kg/m^2)',
+                        'Smoking History (>3mo usage)',
+                        'Family History of CVD',
+                        'History of atherosclerotic disease',
+                        'Peripheral Artery Disease',
+                        'Obstructive CAD',
+                        'Non-obstructive CAD'];
+
   return (
     <>
       <h2><u>Heart Score Calculator</u></h2>
@@ -50,6 +64,11 @@ function HeartPath() {
       <h3>Select What Applies</h3>
       <div>
           <fieldset>
+              <label htmlFor="age">Age: </label>
+                <input id="age" type="number" name="age" />
+          </fieldset>
+
+          <fieldset>
               <legend>Suspicion Level from Patient History</legend>
               {/*<p><i>Retrosternal pain, pressure, radiation to jaw/left shoulder/arms, duration 5–15 min, 
               initiated by exercise/cold/emotion, perspiration, nausea/vomiting, reaction on nitrates 
@@ -69,53 +88,8 @@ function HeartPath() {
               <SegmentedButton options={ageOptions} onChange={handleAgeChange} />
           </fieldset>
 
-          <fieldset className = "riskFactors">
-              <legend>Risk Factors</legend>
-              <label>
-                <input type="checkbox" name="riskFactors"/>
-                Hypertension <br/>
-              </label>
-              <label>
-                <input type="checkbox" name="riskFactors"/>
-                Diabetes Mellitus <br/>
-              </label>
-              <label>
-                <input type="checkbox" name="riskFactors"/>
-                Smoking history <br/>
-              </label>
-              <label>
-                <input type="checkbox" name="riskFactors"/>
-                Atherosclerotic Disease <br/>
-              </label>
-              <label>
-                <input type="checkbox" name="riskFactors"/>
-                Hypercholesterolemia <br/>
-              </label>
-              <label>
-                <input type="checkbox" name="riskFactors"/>
-                Obesity (BMI <span>&#62;</span> 30) <br/>
-              </label>
-              <label>
-                <input type="checkbox" name="riskFactors"/>
-                Family History of Cardiovascular Disease <br/>
-              </label>
-          </fieldset>
+          <Checkboxes title={checkTitle} options={checkOptions}/>
 
-          <fieldset>
-              <legend>Troponin Levels</legend>
-              <label>
-                <input type="checkbox" name="troponin"/>
-                Troponin <span>&#60;</span> 0.04ng/mL
-              </label>
-              <label>
-                <input type="checkbox" name="troponin"/>
-                0.04ng/mL <span>&#8804;</span> Troponin <span>&#8804;</span> 0.08ng/mL
-              </label>
-              <label>
-                <input type="checkbox" name="troponin"/>
-                0.08 ng/mL <span>&#8804;</span> Troponin
-              </label>
-          </fieldset>
       </div>
     </>
   );
