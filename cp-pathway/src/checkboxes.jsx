@@ -18,7 +18,7 @@ function Checkboxes({ title, options }) {
   };
 
   return (
-    <fieldset>
+    <>
         <legend>{title} </legend>
       {options.map((option) => (
         <label>
@@ -31,7 +31,7 @@ function Checkboxes({ title, options }) {
           {option}<br/>
         </label>
       ))}
-    </fieldset>
+    </>
   );
 }
 

@@ -48,19 +48,6 @@ function HeartPath() {
     <>
       <h2><u>Heart Score Calculator</u></h2>
 
-      <fieldset>
-          <legend>CAD</legend>
-          <p>Does the patient have coronary artery disease?</p>
-          <label>
-            <input type="checkbox" name="cad"/>
-            CAD
-          </label>
-          <label>
-            <input type="checkbox" name="cad"/>
-            No CAD
-          </label>
-      </fieldset>
-
       <h3>Select What Applies</h3>
       <div>
           <fieldset>
@@ -70,11 +57,6 @@ function HeartPath() {
 
           <fieldset>
               <legend>Suspicion Level from Patient History</legend>
-              {/*<p><i>Retrosternal pain, pressure, radiation to jaw/left shoulder/arms, duration 5–15 min, 
-              initiated by exercise/cold/emotion, perspiration, nausea/vomiting, reaction on nitrates 
-              within mins, patient recognizes symptoms. Low risk features of chest pain include: well 
-              localized, sharp, non-exertional, no diaphoresis, no nausea or vomiting, and reproducible
-              with palpation.</i></p>*/}
               <SegmentedButton options={historyOptions} onChange={handleHistoryChange} />
           </fieldset>
           
@@ -87,9 +69,9 @@ function HeartPath() {
               <legend>Age</legend>
               <SegmentedButton options={ageOptions} onChange={handleAgeChange} />
           </fieldset>
-
-          <Checkboxes title={checkTitle} options={checkOptions}/>
-
+          <fieldset>
+              <Checkboxes title={checkTitle} options={checkOptions}/>
+          </fieldset>
       </div>
     </>
   );
