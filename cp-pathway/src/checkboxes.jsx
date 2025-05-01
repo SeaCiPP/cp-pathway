@@ -13,16 +13,15 @@ function Checkboxes({ title, options }) {
     } else {
       setCheckedItems(checkedItems.filter((item) => item !== value));
     }
-
-    onChange(checkedItems);
   };
 
   return (
     <>
         <legend>{title} </legend>
-      {options.map((option) => (
+      {options.map((option, index) => (
         <label>
           <input
+            key={index}
             type='checkbox'
             value={option}
             checked={checkedItems.includes(option)}

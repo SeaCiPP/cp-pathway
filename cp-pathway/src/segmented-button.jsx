@@ -4,7 +4,13 @@ import "./segmented-button.css";
 function SegmentedButton({ options, onChange }) {
   const [selectedValue, setSelectedValue] = useState(options[0]);
 
-  const handleButtonClick = (value) => {
+  {/*const handleButtonClick = (value) => {
+    setSelectedValue(value);
+    onChange(value);
+  };*/}
+
+  const handleButtonClick = (event) => {
+    const value = event.target.value;
     setSelectedValue(value);
     onChange(value);
   };
@@ -14,6 +20,7 @@ function SegmentedButton({ options, onChange }) {
       {options.map((option) => (
         <button
           key={option}
+          value={option}
           className={`segment-button ${selectedValue === option ? 'selected' : ''}`}
           onClick={() => handleButtonClick(option)}
         >
