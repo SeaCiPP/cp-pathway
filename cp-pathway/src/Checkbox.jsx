@@ -8,5 +8,5 @@ export default function Checkbox(props) {
       <input type="checkbox"/>
       <span>{props.text}</span>
     </label>
-  )
+  );
 }
