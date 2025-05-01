@@ -11,6 +11,8 @@
     "format": "prettier --write \"src/**/*.{js,jsx}\""
   },
   "dependencies": {
+    "beercss": "^3.10.8",
+    "material-dynamic-colors": "^1.1.2",
     "react": "^19.0.0",
     "react-aria-components": "^1.8.0",
     "react-dom": "^19.0.0"
