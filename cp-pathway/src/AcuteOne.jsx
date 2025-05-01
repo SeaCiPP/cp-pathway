@@ -6,6 +6,7 @@ import Checkbox from "./Checkbox";
 import Radio from "./Radio";
 import DropDown from "./Dropdown";
 import Input from "./Input";
+import Button from "./Button";
 
 export default function AcuteOne() {
     const [selected, setSelected] = useState(""); // State to track selected value
@@ -15,9 +16,9 @@ export default function AcuteOne() {
     };
 
     return (
-        <>
+        <div className = "">
             <h4>Acute Chest Pain</h4>
-            <h5 className="center-text">Chest Pain Checklist</h5>
+            <h5>Chest Pain Checklist</h5>
 
             <Checkbox 
             text = "Vitals Taken?"
@@ -41,14 +42,14 @@ export default function AcuteOne() {
 
             <div>
                 <Radio 
-                value="milk"
+                value="hs"
                 name="trop"
                 label="HS-Troponin (units)"
                 selected={selected}
                 onChange={handleChange}
                 />
                 <Radio 
-                value="milk"
+                value="it"
                 name="trop"
                 label="Troponin I/T (units)"
                 selected={selected}
@@ -62,6 +63,8 @@ export default function AcuteOne() {
                 <p>HEART Score</p>
                 <Input/>
             </div>
-        </>
+
+            <Button />
+        </div>
     )
 }
