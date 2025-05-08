@@ -9,7 +9,7 @@ export default function Radio(props) {
             type="radio"
             value={props.value}
             name={props.name}
-            checked={props.selected === props.value} 
+            checked={props.selected} 
             onChange={props.onChange}             
           />
           <span>{props.label}</span>

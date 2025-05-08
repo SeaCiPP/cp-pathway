@@ -1,5 +1,60 @@
 
+.container {
+    font-family: Arial, sans-serif;
+    width: 360px;
+    margin: auto;
+    padding: 1rem;
+    background: #fff;
+    color: black;
+}
 
-.center-text {
-  text-align: center;
+.container h5 {
+    text-decoration: underline;
+    text-align: center;
+    font-size: 1rem;
+    margin: 1rem;
+}
+.container h4 {
+    font-size: 1rem;
+    font-weight: bold
+}
+.container p {
+    font-size: 0.9rem;
+    margin: 5px;
+}
+
+.header {
+    background: #e6dde6;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+}
+.header h1 {
+    color: black;
+    font-size: 1.5rem;
+}
+
+.field.label.border {
+    padding: 0px;
+    margin: 6px; 
+}
+.field.label.border label {
+    color: lightgray;
+}
+
+.radio span {
+    color: black !important;
+}
+.checkbox span {
+    color: black !important;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 10px 50px;
+    gap: 8px; 
+}
+.input-group {
+    margin: 0px 10px 10px 40px;
 }
