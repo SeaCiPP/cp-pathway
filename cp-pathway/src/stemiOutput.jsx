@@ -20,6 +20,12 @@ export default function stemiOutput() {
                     SciPP pathway not intended to guide STEMI management.</h5>
             </div>
 
+            <div className = "footer"> 
+                <Button 
+                    text="Back"
+                    // this is where the link / routing will go
+                    />
+            </div>
 
         </div>
     )
