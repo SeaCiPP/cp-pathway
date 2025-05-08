@@ -7,5 +7,5 @@ export const troponinTests = {
     Abbott: ["4", "5", "2", "64", "6"],
     Siemens: ["3", "6", "3", "120", "12"],
     // maybe edit this universal trop i/t ones
-    IT: ["0.04", "0.08", "?", "0.08", "?"],
+    IT: ["0.04", "0.08", "-", "0.08", "-"],
 }

@@ -20,10 +20,11 @@ export default function AcuteOne() {
         tropTest: "BeckmanCoulter",
         tropZero: "",
         tropType: "", //
-        tropOne: ""
+        tropOne: "",
+        tropThree: ""
     });
     
-    // saving categories for heart score variables 
+    // saving ranks for troponin
     const [categories, setCategories] = useState({
         tropZero: null,
         tropOne: null,
@@ -50,7 +51,7 @@ export default function AcuteOne() {
         }
 
         let category = null;
-        if (formData.tropType ==="it") {
+        if (formData.tropType === "it") {
             category = checkITTrop(field, value);
         } else if (formData.tropType === "hs") {
             category = checkTrop(field, value);
@@ -61,30 +62,42 @@ export default function AcuteOne() {
         }
     };
 
-    // returns categories for troponin levels
+    // returns categories for hs-troponin levels
     const checkTrop = (field, trop) => {
         const values = troponinTests[formData.tropTest];
 
-        // determine which column in the values to use 
+        // determine which column in the values to use
+        // TIME ZERO TROP
         if (field === "tropZero") {
             if (trop < values[0]) {
                 if (formData.duration > 3) {
                     // low risk -- exit ROUTE
                 }
-                return 0; // very low
-            } else if (trop >= values[0] && trop <= values[3]) {
-                return 1; // intermediate
+                return 1; // very low
+            } else if (trop >= values[0] && trop < values[3]) {
+                return 2; // intermediate
             } else if (trop >= values[3]) {
                 // high risk -- exit ROUTE
             }
-        } else if (field === "tropOne") {
+        // ONE HOUR TROP delta
+        } else if (field === "tropOne" ) {
             trop = trop - formData.tropZero; // determine one hr delta
             if (trop < values[2]) {
-                if (categories.tropZero === 0) {
+                if (categories.tropZero === 1) {
                     // low risk -- exit ROUTE
                 }
-                return 1;
+                return 2;
             } else if (trop >= values[4]) {
+                // high risk -- exit ROUTE
+            }
+        // THREE HOUR TROP delta
+        } else if (field === "tropThree") {
+            trop = trop - formData.tropZero;
+            if (trop < values[2]) {
+                // reveal HEART calculate button
+                // determine category number here to give 2 heart score
+                return 3;
+            } else if (trop >= values[4] || trop >= values[3]) {
                 // high risk -- exit ROUTE
             }
         }
@@ -138,7 +151,7 @@ export default function AcuteOne() {
 
                 <p>Ensure vitals have been taken.</p>
 
-                <p>ECG Result</p>
+                <p>ECG Result:</p>
                 <DropDown 
                 value = {formData.ecg} onChange = {handleEcgChange}
                 itemone = "Option 1: Normal ECG"
@@ -149,13 +162,13 @@ export default function AcuteOne() {
                 />
 
                 <div>
-                    <p>Age</p>
+                    <p>Age:</p>
                     <Input
                     value = {formData.age}
                     onChange = {handleNumChange("age")}
                     />
 
-                    <p>Duration of Chest Pain (in hours)</p>
+                    <p>Duration of Chest Pain: (in hours)</p>
                     <Input
                     value = {formData.duration}
                     onChange = {handleNumChange("duration")}
@@ -163,15 +176,7 @@ export default function AcuteOne() {
                 </div>
 
                 <div>
-                    <p>Available Troponin Test</p>
-                    <DropDown value = {formData.tropTest} onChange = {handleChange("tropTest")}
-                    itemone = "BeckmanCoulter"
-                    itemtwo = "Roche"
-                    itemthree = "Abbott"
-                    itemfour = "Siemens"
-                    label = "Select"
-                    />
-
+                <p>Available Troponin Test:</p>
                     <div className="radio-group">
                         <Radio 
                         value="hs"
@@ -188,13 +193,25 @@ export default function AcuteOne() {
                         onChange={handleChange("tropType")}
                         />
                     </div>
-                    <p>Troponin Level (time zero)</p>
-                        <Input
-                        value = {formData.tropZero}
-                        onChange = {handleTropChange("tropZero")}
-                        disabled={!formData.tropType}
-                        />
-                        <p>Your troponin level is {categories.tropZero || "not set"}</p>
+
+                    {formData.tropType === "hs" && (
+                        <>
+                            <DropDown value = {formData.tropTest} onChange = {handleChange("tropTest")}
+                            itemone = "BeckmanCoulter"
+                            itemtwo = "Roche"
+                            itemthree = "Abbott"
+                            itemfour = "Siemens"
+                            label = "Select"
+                            />
+                        </>
+                    )}
+
+                    <p>Initial Troponin Level:</p>
+                    <Input
+                    value = {formData.tropZero}
+                    onChange = {handleTropChange("tropZero")}
+                    disabled={!formData.tropType}
+                    />
                 </div>   
 
                 {(categories.tropZero === 1 || categories.tropZero === 2) && (
