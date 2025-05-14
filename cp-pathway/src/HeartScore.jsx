@@ -1,80 +1,83 @@
+// HEART or HEAR score page
+
 import { useState } from "react";
-import "./heart-path-desk.css";
-import SegmentedButton from "./components/SegmentedButton.jsx";
-import Checkboxes from "./checkboxes.jsx";
+import "./App.css";
 
-function HeartPath() {
-  const cad = useState(true)
-  const [score, setScore] = useState(0);
+import SegmentedButton from "./components/SegmentedButton";
+import Checkbox from "./components/Checkbox";
+import Input from "./components/Input";
 
-  // Patient History Segmented Button Inputs
-  const historyOptions = ['Low','Moderate', 'High'];
-  const [selectedHistory, setSelectedHistory] = useState(historyOptions[0]);
-  const handleHistoryChange = (value) => {
-    setSelectedHistory(value);
-    console.log('Selected history:', value);
-  };
 
-  // ECG Segmented Button Inputs
-  const ecgOptions = ['Normal','Abnormal'];
-  const [selectedECG, setSelectedECG] = useState(ecgOptions[0]);
-  const handleECGChange = (value) => {
-    setSelectedECG(value);
-    console.log('Selected ECG:', value);
-  };
 
-  // Age Segmented Button Inputs
-  const ageOptions = ['< 45','45-60','61+'];
-  const [selectedAge, setSelectedAge] = useState(ageOptions[0]);
-  const handleAgeChange = (value) => {
-    setSelectedAge(value);
-    console.log('Selected age:', value);
-  };
+export default function HeartScore() {
 
-  // Risk Factor Checkbox List
-  const checkTitle = 'Risk Factors';
-  const checkOptions = ['Hypercholesterolemia',
-                        'Hypertension',
-                        'Diabetes Mellitus',
-                        'Obesity (BMI > 30kg/m^2)',
-                        'Smoking History (>3mo usage)',
-                        'Family History of CVD',
-                        'History of atherosclerotic disease',
-                        'Peripheral Artery Disease',
-                        'Obstructive CAD',
-                        'Non-obstructive CAD'];
+  return(
+    <div>
+      <header className="header">
+        <h1>SCiPP Chest Pain Pathway</h1>
+      </header>
 
-  return (
-    <>
-      <h2><u>Heart Score Calculator</u></h2>
+      <div className="container">
+        <h4>Acute Chest Pain</h4>
+        <h5>Heart Score Calculation</h5>
 
-      <h3>Select What Applies</h3>
-      <div>
-          <fieldset>
-              <label htmlFor="age">Age: </label>
-                <input id="age" type="number" name="age" />
-          </fieldset>
+        <p>Age:</p>
+        <p>Troponin:</p>
 
-          <fieldset>
-              <legend>Suspicion Level from Patient History</legend>
-              <SegmentedButton options={historyOptions} onChange={handleHistoryChange} />
-          </fieldset>
-          
-          <fieldset>
-              <legend>ECG Results</legend>
-              <SegmentedButton options={ecgOptions} onChange={handleECGChange} />
-          </fieldset>
+        <p1>Suspicion Level from Patient History</p1>
+        <p><strong>**Includes: </strong>Retrosternal pain, pressure, radiation to jaw/left shoulder/arms, duration 5–15 min, initiated by exercise/cold/emotion, perspiration, nausea/vomiting, reaction on nitrates within mins, patient recognizes symptoms.</p>
+        <p><strong>**Low risk features include:</strong> well localized, sharp, non-exertional, no diaphoresis, no nausea or vomiting, and reproducible with palpation.</p>
 
-          <fieldset>
-              <legend>Age</legend>
-              <SegmentedButton options={ageOptions} onChange={handleAgeChange} />
-          </fieldset>
-          <fieldset>
-              <Checkboxes title={checkTitle} options={checkOptions}/>
-          </fieldset>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <p></p>
+          <SegmentedButton />
+          <p></p>
+      
+        </div>
+
+        <div className="checkboxes">
+          <p1>Risk Factors</p1>
+          <Checkbox 
+          text = "Hypercholesterolemia"
+          />
+          <Checkbox 
+          text = "Hypertension" 
+          />
+          <Checkbox 
+          text = "Diabetes Mellitus"
+          />
+          <Checkbox 
+          text = "Obesity (BMI > 30 kg/m2)"
+          />
+          <Checkbox 
+          text = "Smoking History (>3mo Usage)"
+          />
+          <Checkbox
+          text = "Family History of CVD"
+          />
+          <Checkbox
+          text = "History of Atherosclerotic Disease"
+          />
+          <Checkbox
+          text = "Peripheral Arterial Disease"
+          />
+          <Checkbox
+          text = "Obstructive CAD"
+          />
+          <Checkbox
+          text = "Non-Obstructive CAD"
+          />
+        </div>
+
+        <div style={{ display: "flex" }}>
+          <div style={{ marginLeft: "auto" }}>
+              <p>Heart Score:</p>
+          </div>
+        </div>
+
       </div>
-    </>
-  );
-}
+    </div>
 
-export default HeartPath;
+  )
+
+}
