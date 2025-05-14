@@ -8,12 +8,13 @@ import DropDown from "./components/DropDown";
 import Input from "./components/Input";
 import Button from "./components/Button";
 
-import { troponinTests } from './troponinTests.js';
+import { troponinTests } from "./troponinTests.js";
+import { useForm } from "./FormContext.jsx";
 
 export default function AcuteOne() {
    
     // for all user inputs
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useForm({
         ecg: "Option 1: Normal ECG", //
         age: "", // 
         duration: "", // 

@@ -7,9 +7,13 @@ import SegmentedButton from "./components/SegmentedButton";
 import Checkbox from "./components/Checkbox";
 import Input from "./components/Input";
 
+import { useForm } from "./FormContext.jsx";
 
 
 export default function HeartScore() {
+  const { formData, setFormData } = useForm();
+
+  const [selected, setSelected] = useState("");
 
   return(
     <div>
@@ -21,7 +25,7 @@ export default function HeartScore() {
         <h4>Acute Chest Pain</h4>
         <h5>Heart Score Calculation</h5>
 
-        <p>Age:</p>
+        <p>Age:{formData.age}</p>
         <p>Troponin:</p>
 
         <p1>Suspicion Level from Patient History</p1>
@@ -30,9 +34,11 @@ export default function HeartScore() {
 
         <div style={{ display: "flex", justifyContent: "center" }}>
           <p></p>
-          <SegmentedButton />
+          <SegmentedButton 
+          selected={selected}
+          onChange{setSelected}
+          />
           <p></p>
-      
         </div>
 
         <div className="checkboxes">
