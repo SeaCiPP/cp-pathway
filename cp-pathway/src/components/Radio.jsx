@@ -10,7 +10,8 @@ export default function Radio(props) {
             value={props.value}
             name={props.name}
             checked={props.selected} 
-            onChange={props.onChange}             
+            onChange={props.onChange}  
+            disabled={props.disabled}           
           />
           <span>{props.label}</span>
         </label>

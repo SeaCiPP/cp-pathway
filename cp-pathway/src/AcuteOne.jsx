@@ -185,6 +185,7 @@ export default function AcuteOne() {
                         label="HS-Troponin (units)"
                         selected={formData.tropType === "hs"}
                         onChange={handleChange("tropType")}
+                        disabled={!formData.duration}
                         />
                         <Radio 
                         value="it"
@@ -192,6 +193,7 @@ export default function AcuteOne() {
                         label="Troponin I/T (units)"
                         selected={formData.tropType === "it"}
                         onChange={handleChange("tropType")}
+                        disabled={!formData.duration}
                         />
                     </div>
 
@@ -236,7 +238,7 @@ export default function AcuteOne() {
                         ) : null }
 
                         {formData.tropType === "hs" && categories.tropOne === 2 ? (
-                            <>
+                            <div className="input-group">
                                 <p>Troponin at 3 Hours:</p>
                                 <Input
                                 value = {formData.tropThree}
@@ -244,9 +246,11 @@ export default function AcuteOne() {
                                 />
                                 {categories.tropThree === 3 && (
                                     <>
-                                        <p> <b>HEART Score</b> </p>
-                                        <div style={{ display: "flex" }}>
-                                            <div style={{ marginLeft: "auto" }}>
+                                        <h4>Heart Score:
+                                            <span className="gray-box"></span>
+                                        </h4>
+                                        <div>
+                                            <div style={{ marginTop: "10px" }}>
                                                 <Button 
                                                 image="search"
                                                 text="Calculate"
@@ -255,20 +259,29 @@ export default function AcuteOne() {
                                         </div>
                                     </>
                                 )}
-                            </>                 
+                            </div>                 
                         ) : formData.tropType === "it" && categories.tropThree === 2 ? (
                             <>
-                                <p> <b>HEART Score</b> </p>
-                                <div style={{ display: "flex" }}>
-                                    <div style={{ marginLeft: "auto" }}>
+                                <h4>Heart Score:
+                                    <span className="gray-box"></span>
+                                </h4>
+                                <div>
+                                    <div style={{ marginTop: "10px" }}>
                                         <Button 
                                         image="search"
                                         text="Calculate"
                                         /> 
                                     </div>
                                 </div>
-                             </>
+                        </>
                         ) : null }
+
+                        <div className ="back-button">
+                            <Button
+                            image="Home"
+                            text="Back"
+                            />
+                        </div>
                     </>
                 )}
             </div>

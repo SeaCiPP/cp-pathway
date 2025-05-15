@@ -155,9 +155,16 @@ export default function HeartScore() {
         </div>
 
         <Button
-        text="Done"
+        image= "check"
+        text= "Done"
         />
 
+        <div className ="back-button">
+          <Button
+          image="Home"
+          text="Back"
+          />
+        </div>
 
       </div>
     </div>
