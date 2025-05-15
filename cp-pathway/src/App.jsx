@@ -4,15 +4,15 @@
 // import "./App.css";
 
 // get rid of diss
-import AcuteOne from "./AcuteOne";
-// import HeartScore from "./HeartScore";
+// import AcuteOne from "./AcuteOne";
+import HeartScore from "./HeartScore";
 
-import { FormProvider } from "./FormContext.jsx";
+import { FormProvider } from "./FormContext";
 
 function App() {
   return (
     <FormProvider>
-      <AcuteOne />
+      <HeartScore />
     </FormProvider>
   )
 }

@@ -13,7 +13,8 @@ export const FormProvider = ({ children }) => {
         tropZero: "",
         tropType: "", //
         tropOne: "",
-        tropThree: ""
+        tropThree: "",
+        history: ""
     });
 
     return (
@@ -23,4 +24,4 @@ export const FormProvider = ({ children }) => {
     );
 };
 
-export const useForm = () => {useContext(FormContext)};
+export const useForm = () => useContext(FormContext);

@@ -5,7 +5,7 @@ import "beercss";
 export default function Button(props) {
     return(
         <button className="border small-round">
-            <i>search</i>
+            <i>{props.image}</i>
             <span>{props.text}</span>
         </button>
     )

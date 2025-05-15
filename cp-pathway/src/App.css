@@ -27,6 +27,21 @@
     text-decoration: underline;
 }
 
+.gray-box {
+    background-color: lightgray;
+    padding: 6px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    line-height: 20px;
+    margin-left: 5px;
+}
+.row-between {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
 .header {
     background: #e6dde6;
     display: flex;

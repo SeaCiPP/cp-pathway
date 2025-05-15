@@ -14,7 +14,7 @@ import { useForm } from "./FormContext.jsx";
 export default function AcuteOne() {
    
     // for all user inputs
-    const [formData, setFormData] = useForm({
+    const { formData, setFormData } = useForm({
         ecg: "Option 1: Normal ECG", //
         age: "", // 
         duration: "", // 
@@ -248,6 +248,7 @@ export default function AcuteOne() {
                                         <div style={{ display: "flex" }}>
                                             <div style={{ marginLeft: "auto" }}>
                                                 <Button 
+                                                image="search"
                                                 text="Calculate"
                                                 /> 
                                             </div>
@@ -261,6 +262,7 @@ export default function AcuteOne() {
                                 <div style={{ display: "flex" }}>
                                     <div style={{ marginLeft: "auto" }}>
                                         <Button 
+                                        image="search"
                                         text="Calculate"
                                         /> 
                                     </div>
