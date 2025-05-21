@@ -1,16 +1,20 @@
 // HEART or HEAR score page
 
 import { useState } from "react";
-import "./App.css";
+import "../App.css";
 
-import SegmentedButton from "./components/SegmentedButton";
-import Checkbox from "./components/Checkbox";
-import Button from "./components/Button";
+import SegmentedButton from "../components/SegmentedButton.jsx";
+import Checkbox from "../components/Checkbox.jsx";
+import Button from "../components/Button.jsx";
 
-import { useForm } from "./FormContext.jsx";
+import { useForm } from "../FormContext.jsx";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
+export const Route = createLazyFileRoute('/heart-score')({
+  component: HeartScore
+})
 
-export default function HeartScore() {
+function HeartScore() {
   const { formData, setFormData } = useForm();
 
   // to handle the risk checkboxes
@@ -163,6 +167,7 @@ export default function HeartScore() {
           <Button
           image="Home"
           text="Back"
+          toPage="/"
           />
         </div>
 

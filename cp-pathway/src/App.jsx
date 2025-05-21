@@ -4,15 +4,19 @@
 // import "./App.css";
 
 // get rid of diss
- import AcuteOne from "./AcuteOne";
+// import AcuteOne from "./AcuteOne";
 //vimport HeartScore from "./HeartScore";
 
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { routeTree } from "./routeTree.gen";
 import { FormProvider } from "./FormContext";
+
+const router = createRouter({ routeTree })
 
 function App() {
   return (
     <FormProvider>
-      <AcuteOne />
+      <RouterProvider router={router} />
     </FormProvider>
   )
 }

@@ -1,17 +1,22 @@
 // First acute chest pain pathway page
 
 import { useState } from "react";
-import "./App.css"; // CSS for styling
+import "../App.css"; // CSS for styling
 
-import Radio from "./components/Radio";
-import DropDown from "./components/DropDown";
-import Input from "./components/Input";
-import Button from "./components/Button";
+import Radio from "../components/Radio.jsx";
+import DropDown from "../components/DropDown.jsx";
+import Input from "../components/Input.jsx";
+import Button from "../components/Button.jsx";
 
-import { troponinTests } from "./troponinTests.js";
-import { useForm } from "./FormContext.jsx";
+import { troponinTests } from "../troponinTests.js";
+import { useForm } from "../FormContext.jsx";
+import { createLazyFileRoute } from '@tanstack/react-router'
 
-export default function AcuteOne() {
+export const Route = createLazyFileRoute("/acute-one")({
+    component: AcuteOne
+})
+
+function AcuteOne() {
    
     // for all user inputs
     const { formData, setFormData } = useForm({
