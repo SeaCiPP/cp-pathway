@@ -1,0 +1,42 @@
+name: Build & Deploy via Subtree
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1) Checkout entire history so git subtree can see and push the gh-pages branch
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0        # important for subtree to see past commits
+          persist-credentials: true  # allows the push back to origin
+
+      # 2) Set up Node
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # 3) Install deps
+      - name: Install dependencies
+        run: npm ci
+
+      # 4) Build your Vite app
+      - name: Build
+        run: npm run build
+
+      # 5) Push dist/ to gh-pages via git subtree
+      - name: Deploy via git subtree
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # configure a Git user for the commit
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # push only dist/ into gh-pages
+          git subtree push --prefix dist origin gh-pages
