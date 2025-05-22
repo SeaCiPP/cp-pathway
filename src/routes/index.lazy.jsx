@@ -8,7 +8,7 @@ export const Route = createLazyFileRoute('/')({
 function LandingPage() {
   return (
     <>
-      <div>Landing Page</div>
+      <div>Test Landing Page</div>
     </>
   )
 }
