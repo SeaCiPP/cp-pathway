@@ -1,0 +1,1 @@
+import{c as n,j as e}from"./index-DpjRrDz9.js";import"./beer.min-h7FG-2Y6.js";const i=n("/")({component:t});function t(){return e.jsx(e.Fragment,{children:e.jsx("div",{children:"Landing Page"})})}export{i as Route};
