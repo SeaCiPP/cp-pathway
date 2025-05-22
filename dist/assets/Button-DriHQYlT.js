@@ -1,1 +1,0 @@
-import{j as t,L as e}from"./index-DpjRrDz9.js";import"./beer.min-h7FG-2Y6.js";function i(n){return t.jsx(e,{to:n.toPage,children:t.jsxs("button",{className:"border small-round",children:[t.jsx("i",{children:n.image}),t.jsx("span",{children:n.text})]})})}export{i as B};
