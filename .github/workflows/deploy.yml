@@ -1,4 +1,4 @@
-name: Build & Deploy via Subtree
+name: Build & Deploy to GitHub Pages
 
 on:
   push:
@@ -6,22 +6,23 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed so the GH_TOKEN can push
     steps:
-      # 1) Checkout entire history so git subtree can see and push the gh-pages branch
+      # 1) Check out full history
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0        # important for subtree to see past commits
-          persist-credentials: true  # allows the push back to origin
+          fetch-depth: 0
 
-      # 2) Set up Node
+      # 2) Set up Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # 3) Install deps
+      # 3) Install dependencies
       - name: Install dependencies
         run: npm ci
 
@@ -29,14 +30,13 @@ jobs:
       - name: Build
         run: npm run build
 
-      # 5) Push dist/ to gh-pages via git subtree
-      - name: Deploy via git subtree
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # configure a Git user for the commit
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          # push only dist/ into gh-pages
-          git subtree push --prefix dist origin gh-pages
+      # 5) Deploy to gh-pages branch
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          enable_jekyll: false
