@@ -1,11 +1,7 @@
 // import { useState } from "react";
 // import reactLogo from "./assets/react.svg";
 // import viteLogo from "/vite.svg";
-// import "./App.css";
-
-// get rid of diss
-// import AcuteOne from "./AcuteOne";
-//vimport HeartScore from "./HeartScore";
+import "./App.css";
 
 import { RouterProvider, createRouter, createHashHistory } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
