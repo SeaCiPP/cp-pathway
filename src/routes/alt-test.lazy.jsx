@@ -17,14 +17,14 @@ function AltTesting() {
     const formData = useForm();
   
      const [crit, setCrit] = useState([
-    { key: "cannotWalk", label: "Cannot walk on a treadmill or 2 flights of stairs", checked: false },
-    { key: "irregRhythm", label: "Irregular heart rhythm", checked: false },
+    { key: "cad", label: "Known obstructive coronary artery disease (>50% stenosis) or prior coronary revascularization", checked: false },
+    { key: "irreg", label: "Frequent ectopy/irregular heart rate or atrial fibrillation", checked: false },
     { key: "iodinatedAllergy", label: "Iodinated contrast allergy", checked: false },
-    { key: "leftBlock", label: "Left bundle branch block", checked: false },
-    { key: "severeDisease", label: "Severe reactive airway disease with active wheezing", checked: false },
     { key: "noHold", label: "Can't hold breath for 10 seconds", checked: false },
-    { key: "irreg", label: "Frequent ectopy/irregular heart rate", checked: false },
-    { key: "betaBlock", label: "Contraindications to lowering HR with beta blockers", checked: false },
+    { key: "cannotWalk", label: "Cannot walk on a treadmill to peak stress", checked: false },
+    { key: "leftBlock", label: "Left bundle branch block", checked: false },
+    { key: "severeDisease", label: "Severe reactive airway disease with wheezing on examination", checked: false },
+    { key: "block", label: "Advanced heart block", checked: false },
     ]);
 
 
@@ -49,26 +49,28 @@ function AltTesting() {
     ]; 
 
 const isTestAvailable = (test) => {
-    // set up for ccta too
-    const cannotWalk = crit.find(c => c.key === "cannotWalk")?.checked;
-    const irregRhythm = crit.find(c => c.key === "irregRhythm")?.checked;
+    const cad = crit.find(c => c.key === "cad")?.checked;;
+    const irreg = crit.find(c => c.key === "irreg")?.checked;
     const iodinatedAllergy = crit.find(c => c.key === "iodinatedAllergy")?.checked;
+    const noHold = crit.find(c => c.key === "noHold")?.checked;
+    const cannotWalk = crit.find(c => c.key === "cannotWalk")?.checked;
     const leftBlock = crit.find(c => c.key === "leftBlock")?.checked;
     const severeDisease = crit.find(c => c.key === "severeDisease")?.checked;
-    const noHold = crit.find(c => c.key === "noHold")?.checked;
-    const irreg = crit.find(c => c.key === "irreg")?.checked;
-    const betaBlock = crit.find(c => c.key === "betaBlock")?.checked;
+    const block = crit.find(c => c.key === "block")?.checked;
+
+    // ccta criteria is checked first...
+    if (formData.age > 80 && test.type === 'imaging') return false;
+    if (cad && test.type === 'imaging') return false;
+    if (irreg && (test.type === 'imaging' || !(test.name.includes('SPECT') || 
+    test.name.includes('PET') || test.type ==='consultation'))) return false;
+    if (iodinatedAllergy && test.type === 'imaging') return false;
+    if (noHold && (test.type === 'imaging')) return false;
 
     if (cannotWalk && test.type === 'treadmill') return false;
-    if (irregRhythm && test.name === 'Dobutamine Electrocardiogram') return false;
-    if (iodinatedAllergy && test.type === 'imaging') return false;
     if (leftBlock && test.name === 'Treadmill Nuclear Perfusion (SPECT)') return false;
     if (severeDisease && test.type === 'vasodilator') return false;
-    if (noHold && (test.type === 'imaging' || test.name === 'Vasodilator Stress MRI')) return false;
-    if (irreg && (test.type === 'imaging' || test.name === 'Dobutamine Electrocardiogram')) return false;
-    if (betaBlock && test.type === 'imaging') return false;
+    if (block && test.type === 'vasodilator') return false;
 
-    if (formData.age > 80) return false;
 
   return true;
 };
