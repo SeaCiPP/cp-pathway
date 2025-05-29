@@ -1,0 +1,1 @@
+import{j as c}from"./index-Dl1Nh5Xo.js";import"./Button-D1pmYFg4.js";function h(e){return c.jsxs("label",{className:"checkbox",children:[c.jsx("input",{type:"checkbox",checked:e.checked,onChange:e.onChange}),c.jsx("span",{children:e.label})]})}export{h as C};

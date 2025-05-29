@@ -1,0 +1,1 @@
+import{c as a,j as t,L as n}from"./index-Dl1Nh5Xo.js";const i=a("/")({component:e});function e(){return t.jsxs("div",{className:"landing-container",children:[t.jsx("h1",{children:"CP Pathway"}),t.jsx("div",{className:"navigation-buttons",children:t.jsx(n,{to:"/heart-score",className:"nav-button",children:"Start with HeartScore"})})]})}export{i as Route};
