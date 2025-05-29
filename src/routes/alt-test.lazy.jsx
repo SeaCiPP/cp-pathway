@@ -38,8 +38,8 @@ function AltTesting() {
 
     const tests = [
         { name: 'Coronary CT Angiography (CCTA)', type: 'imaging' },
-        { name: 'Treadmill Electrocardiogram', type: 'treadmill' },
-        { name: 'Dobutamine Electrocardiogram', type: 'dobutamine' },
+        { name: 'Treadmill Echocardiogram', type: 'treadmill' },
+        { name: 'Dobutamine Stress Echocardiogram', type: 'dobutamine' },
         { name: 'Treadmill Nuclear Perfusion (SPECT)', type: 'treadmill' },
         { name: 'Vasodilator Nuclear Perfusion (SPECT)', type: 'vasodilator' },
         { name: 'Dobutamine Nuclear Perfusion (SPECT)', type: 'dobutamine' },
@@ -50,7 +50,7 @@ function AltTesting() {
 
 const isTestAvailable = (test) => {
     const cad = crit.find(c => c.key === "cad")?.checked;;
-    const irreg = crit.find(c => c.key === "irreg")?.checked;
+    const irreg = crit.find(c => c.key === "irreg")?.checked; // add elimination
     const iodinatedAllergy = crit.find(c => c.key === "iodinatedAllergy")?.checked;
     const noHold = crit.find(c => c.key === "noHold")?.checked;
     const cannotWalk = crit.find(c => c.key === "cannotWalk")?.checked;
@@ -61,8 +61,7 @@ const isTestAvailable = (test) => {
     // ccta criteria is checked first...
     if (formData.age > 80 && test.type === 'imaging') return false;
     if (cad && test.type === 'imaging') return false;
-    if (irreg && (test.type === 'imaging' || !(test.name.includes('SPECT') || 
-    test.name.includes('PET') || test.type ==='consultation'))) return false;
+    if (irreg && (test.type === 'imaging' || test.type === 'dobutamine' || test.type ==='consultation')) return false;
     if (iodinatedAllergy && test.type === 'imaging') return false;
     if (noHold && (test.type === 'imaging')) return false;
 
