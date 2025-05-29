@@ -42,6 +42,10 @@ function HeartScore() {
     setFormData((prev) => ({ ...prev, history: value }));
   };
 
+  // Add a handler for the Done button
+  const handleDone = () => {
+    setFormData(prev => ({ ...prev, heartScoreCalculated: true, heartScore }));
+  };
 
   // determine points for each thing in heart score
   // history, ekg, age, riskfactor, trop
@@ -123,7 +127,7 @@ function HeartScore() {
           </p>
         </div>
 
-        <p1>Suspicion Level from Patient History</p1>
+        <p style={{ fontWeight: 500, fontSize: '1rem', marginBottom: 8, color: '#222' }}>Suspicion Level from Patient History</p>
         <p><strong>**Includes: </strong>Retrosternal pain, pressure, radiation to jaw/left shoulder/arms, duration 5–15 min, initiated by exercise/cold/emotion, perspiration, nausea/vomiting, reaction on nitrates within mins, patient recognizes symptoms.</p>
         <p><strong>**Low suspicion features include:</strong> well localized, sharp, non-exertional, no diaphoresis, no nausea or vomiting, and reproducible with palpation.</p>
 
@@ -137,7 +141,7 @@ function HeartScore() {
         </div>
 
         <div style={{ paddingTop: "15px" }}>
-          <p1>Risk Factors</p1>
+          <p style={{ fontWeight: 500, fontSize: '1rem', marginBottom: 8, color: '#222' }}>Risk Factors</p>
           <div className="checkboxes">
             {items.map((item, idx) => (
               <Checkbox
@@ -161,6 +165,8 @@ function HeartScore() {
         <Button
         image= "check"
         text= "Done"
+        toPage="/acute-one"
+        onClick={handleDone}
         />
 
         <div className ="back-button">

@@ -14,7 +14,9 @@ export const FormProvider = ({ children }) => {
         tropType: "", //
         tropOne: "",
         tropThree: "",
-        history: ""
+        history: "",
+        heartScoreCalculated: false,
+        heartScore: null
     });
 
     return (

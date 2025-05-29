@@ -110,10 +110,16 @@ const isTestAvailable = (test) => {
                     ))}
                 </div>
 
-                <div className ="back-button">
+                <div className="button-container">
                     <Button
-                    image="Home"
-                    text="Back"
+                        image="Home"
+                        text="Back to AcuteOne"
+                        toPage="/acute-one"
+                    />
+                    <Button
+                        image="check"
+                        text="Complete Pathway"
+                        toPage="/"
                     />
                 </div>
             </div>

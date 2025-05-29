@@ -5,7 +5,7 @@ import "beercss";
 export default function DropDown(props) {
     return(
         <div className="field label suffix border">
-            <select value={props.value} onChange={props.onChange}>
+            <select value={props.value} onChange={props.onChange} style={{ color: '#111' }}>
                 <option>{props.itemone}</option>
                 <option>{props.itemtwo}</option>
                 <option>{props.itemthree}</option>
