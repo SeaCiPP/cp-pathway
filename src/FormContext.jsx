@@ -5,22 +5,25 @@ import { createContext, useContext, useState } from "react";
 const FormContext = createContext();
 
 export const FormProvider = ({ children }) => {
-    const [formData, setFormData] = useState({
-        ecg: "Option 1: Normal ECG", //
-        age: "", // 
-        duration: "", // 
-        tropTest: "BeckmanCoulter",
+    const initialState = {
+        ecg: "",
+        age: "",
+        duration: "",
+        tropTest: "",
         tropZero: "",
-        tropType: "", //
+        tropType: "",
         tropOne: "",
         tropThree: "",
         history: "",
         heartScoreCalculated: false,
-        heartScore: null
-    });
+        heartScore: null,
+        riskFactors: []
+    };
+    const [formData, setFormData] = useState(initialState);
+    const resetFormData = () => setFormData(initialState);
 
     return (
-        <FormContext.Provider value={{ formData, setFormData }}>
+        <FormContext.Provider value={{ formData, setFormData, resetFormData }}>
             {children}
         </FormContext.Provider>
     );

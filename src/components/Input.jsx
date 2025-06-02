@@ -11,7 +11,7 @@ export default function Input(props) {
             value = {props.value}
             onChange={props.onChange} 
             disabled={props.disabled}
-            style={{ color: '#000' }}
+            placeholder={props.placeholder}
             />
             <label>{props.label || "Value"}</label>
         </div>

@@ -1,4 +1,3 @@
-
 .container {
     font-family: Arial, sans-serif;
     width: 360px;
@@ -12,11 +11,14 @@
     text-decoration: underline;
     text-align: center;
     font-size: 1rem;
-    margin: 1rem;
+    margin: 1rem 0; /* Remove left/right margins to align with inputs */
+    padding-left: 0; /* Remove any left padding */
 }
 .container h4 {
     font-size: 1rem;
-    font-weight: bold
+    font-weight: bold;
+    margin: 0; /* Remove all margins to align with inputs */
+    padding-left: 0; /* Remove any left padding */
 }
 .container p {
     font-size: 0.9rem;
@@ -61,10 +63,58 @@
 
 .field.label.border {
     padding: 0px;
-    margin: 6px; 
+    width: 100%;
+    max-width: 100%; /* Match separating line width */
+    margin: 6px 0; /* Align left instead of centering */
+    display: block;
 }
-.field.label.border label {
-    color: lightgray;
+
+/* Make all user input values bold and purple */
+.field.label.border input[type="text"], 
+.field.label.border input[type="number"], 
+.field.label.border input,
+input[type="text"], 
+input[type="number"], 
+input {
+    color: #7B2CBF !important;
+    font-weight: bold !important;
+}
+
+/* Make select dropdown values bold and purple */
+.field.label.suffix.border select,
+select {
+    border-radius: 8px; /* Ensure rounded corners for select element */
+}
+
+/* Style for actual selected values (purple and bold) */
+.field.label.suffix.border select.selected-text,
+select.selected-text {
+    color: #7B2CBF !important;
+    font-weight: bold !important;
+}
+
+/* Style for placeholder text (gray and normal) */
+.field.label.suffix.border select.placeholder-text,
+select.placeholder-text {
+    color: #888 !important;
+    font-weight: normal !important;
+}
+
+/* Make placeholder text gray and normal weight when no option is selected */
+.field.label.suffix.border select[value=""],
+.field.label.suffix.border select:invalid,
+select[value=""],
+select:invalid {
+    color: #888 !important;
+    font-weight: normal !important;
+}
+
+.field.label.suffix.border {
+    width: 100%;
+    max-width: 100%; /* Match separating line width */
+    margin: 6px 0; /* Align left instead of centering */
+    display: block;
+    border-radius: 8px; /* Ensure rounded corners */
 }
 
 .radio span {
@@ -77,8 +127,10 @@
 .radio-group {
     display: flex;
     flex-direction: column;
-    margin: 10px 50px;
+    margin: 0; /* Remove all margins to align with inputs */
     gap: 8px; 
+    width: 100%;
+    max-width: 100%; /* Match separating line width */
 }
 .input-group {
     margin: 0px 10px 10px 40px;
@@ -88,11 +140,10 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    margin: 10px;
+    margin: 0; /* Align left instead of centering */
     width: 100%;
-    max-width: 340px; /* Leave some padding within your 360px container */
+    max-width: 100%; /* Match separating line width */
 }
-
 
 .tests-container {
   background: white;
@@ -112,4 +163,208 @@
     background-color: #f5f5f5;
     color: #999;
     cursor: not-allowed;
+}
+
+/* Standardized Button Container - Align buttons left */
+.btn-container {
+    display: flex;
+    justify-content: flex-start; /* Align left instead of centering */
+    align-items: center;
+    width: 100%;
+    margin-top: 32px; /* Match consistent form spacing */
+}
+
+/* Standardized Button Styles and Animations */
+.btn-standard {
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 20px 24px;
+    min-height: 56px; /* Ensure good mobile touch target */
+    width: 100%;
+    max-width: 100%; /* Match separating line width */
+    margin: 0; /* Remove margin since container handles spacing */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s ease-in-out;
+    transform: translateY(0);
+    text-align: center;
+    box-sizing: border-box;
+    line-height: 1.2;
+}
+
+.btn-standard:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+}
+
+.btn-standard:active {
+    transform: translateY(0);
+}
+
+/* Align standalone buttons to the left */
+button:not(.btn-standard) {
+    display: block;
+    margin: 16px 0; /* Align left instead of centering */
+    text-align: center;
+}
+
+/* SegmentedButton and navigation elements - align left */
+nav.no-space {
+    display: flex;
+    justify-content: flex-start; /* Align left instead of centering */
+    align-items: center;
+    width: 100%;
+    max-width: 100%; /* Match separating line width */
+    margin: 16px 0; /* Align left instead of centering */
+}
+
+/* Make SegmentedButton more mobile-friendly */
+nav.no-space button {
+    min-height: 48px;
+    padding: 12px 16px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+nav.no-space button:hover {
+    transform: translateY(-1px);
+}
+
+nav.no-space button:active {
+    transform: translateY(0);
+}
+
+.navigation-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align left instead of centering */
+    gap: 16px;
+    margin: 16px 0; /* Align left instead of centering */
+    width: 100%;
+    max-width: 100%; /* Match separating line width */
+}
+
+.nav-button {
+    display: block;
+    width: 100%;
+    max-width: 100%; /* Match separating line width */
+    text-align: center;
+    text-decoration: none;
+}
+
+/* Button Animation Keyframes */
+@keyframes buttonPulse {
+    0% { 
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.25); 
+    }
+    70% { 
+        box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); 
+    }
+    100% { 
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); 
+    }
+}
+
+@keyframes heartPulse {
+    0% { 
+        box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.25); 
+    }
+    70% { 
+        box-shadow: 0 0 0 12px rgba(25, 118, 210, 0); 
+    }
+    100% { 
+        box-shadow: 0 0 0 0 rgba(25, 118, 210, 0); 
+    }
+}
+
+@keyframes iconBounce {
+    0%, 100% { 
+        transform: translateY(0); 
+    }
+    50% { 
+        transform: translateY(-3px); 
+    }
+}
+
+/* STEMI Button specific animation */
+@keyframes stemiPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+/* Lavender shell for multiple choice questions */
+.mcq-container {
+    background-color: #f3f0ff; /* Lavender background */
+    border: 1px solid #e0d4ff;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0; /* Align left instead of centering */
+    width: 100%;
+    max-width: 100%; /* Match separating line width */
+    box-sizing: border-box;
+}
+
+.mcq-container .radio-group {
+    margin: 0; /* Remove margins inside MCQ container */
+}
+
+.mcq-container label {
+    font-weight: 500;
+    fontSize: '1rem';
+    marginBottom: 12px;
+    display: block;
+    color: '#222';
+    padding-left: 0; /* Remove any left padding */
+}
+
+/* Remove indentation from radio buttons */
+.radio {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+.radio span {
+    color: black !important;
+    padding-left: 0 !important;
+}
+
+/* Fix placeholder visibility when container background changes */
+::placeholder {
+    color: #666 !important;
+    opacity: 1 !important;
+}
+
+::-webkit-input-placeholder {
+    color: #666 !important;
+    opacity: 1 !important;
+}
+
+::-moz-placeholder {
+    color: #666 !important;
+    opacity: 1 !important;
+}
+
+:-ms-input-placeholder {
+    color: #666 !important;
+    opacity: 1 !important;
+}
+
+/* BeerCSS specific placeholder fixes */
+.field.label.border ::placeholder,
+.field.label.suffix.border ::placeholder {
+    color: #666 !important;
+    opacity: 1 !important;
 }
