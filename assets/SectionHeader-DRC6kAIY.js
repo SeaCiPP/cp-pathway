@@ -1,1 +1,0 @@
-import{j as o}from"./index-dI7VNcNz.js";const e=({children:t})=>o.jsx("h2",{style:{fontSize:"1.15rem",fontWeight:600,marginBottom:8,marginTop:0,marginLeft:0,marginRight:0,paddingLeft:0,color:"#111"},children:t});export{e as S};
