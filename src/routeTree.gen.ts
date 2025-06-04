@@ -17,6 +17,7 @@ import { Route as rootRoute } from './routes/__root'
 // Create Virtual Routes
 
 const HeartScoreLazyImport = createFileRoute('/heart-score')()
+const ClinicalNotesLazyImport = createFileRoute('/clinical-notes')()
 const AltTestLazyImport = createFileRoute('/alt-test')()
 const AcuteOneLazyImport = createFileRoute('/acute-one')()
 const IndexLazyImport = createFileRoute('/')()
@@ -28,6 +29,14 @@ const HeartScoreLazyRoute = HeartScoreLazyImport.update({
   path: '/heart-score',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/heart-score.lazy').then((d) => d.Route))
+
+const ClinicalNotesLazyRoute = ClinicalNotesLazyImport.update({
+  id: '/clinical-notes',
+  path: '/clinical-notes',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/clinical-notes.lazy').then((d) => d.Route),
+)
 
 const AltTestLazyRoute = AltTestLazyImport.update({
   id: '/alt-test',
@@ -72,6 +81,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AltTestLazyImport
       parentRoute: typeof rootRoute
     }
+    '/clinical-notes': {
+      id: '/clinical-notes'
+      path: '/clinical-notes'
+      fullPath: '/clinical-notes'
+      preLoaderRoute: typeof ClinicalNotesLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/heart-score': {
       id: '/heart-score'
       path: '/heart-score'
@@ -88,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '/acute-one': typeof AcuteOneLazyRoute
   '/alt-test': typeof AltTestLazyRoute
+  '/clinical-notes': typeof ClinicalNotesLazyRoute
   '/heart-score': typeof HeartScoreLazyRoute
 }
 
@@ -95,6 +112,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '/acute-one': typeof AcuteOneLazyRoute
   '/alt-test': typeof AltTestLazyRoute
+  '/clinical-notes': typeof ClinicalNotesLazyRoute
   '/heart-score': typeof HeartScoreLazyRoute
 }
 
@@ -103,15 +121,27 @@ export interface FileRoutesById {
   '/': typeof IndexLazyRoute
   '/acute-one': typeof AcuteOneLazyRoute
   '/alt-test': typeof AltTestLazyRoute
+  '/clinical-notes': typeof ClinicalNotesLazyRoute
   '/heart-score': typeof HeartScoreLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/acute-one' | '/alt-test' | '/heart-score'
+  fullPaths:
+    | '/'
+    | '/acute-one'
+    | '/alt-test'
+    | '/clinical-notes'
+    | '/heart-score'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/acute-one' | '/alt-test' | '/heart-score'
-  id: '__root__' | '/' | '/acute-one' | '/alt-test' | '/heart-score'
+  to: '/' | '/acute-one' | '/alt-test' | '/clinical-notes' | '/heart-score'
+  id:
+    | '__root__'
+    | '/'
+    | '/acute-one'
+    | '/alt-test'
+    | '/clinical-notes'
+    | '/heart-score'
   fileRoutesById: FileRoutesById
 }
 
@@ -119,6 +149,7 @@ export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
   AcuteOneLazyRoute: typeof AcuteOneLazyRoute
   AltTestLazyRoute: typeof AltTestLazyRoute
+  ClinicalNotesLazyRoute: typeof ClinicalNotesLazyRoute
   HeartScoreLazyRoute: typeof HeartScoreLazyRoute
 }
 
@@ -126,6 +157,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   AcuteOneLazyRoute: AcuteOneLazyRoute,
   AltTestLazyRoute: AltTestLazyRoute,
+  ClinicalNotesLazyRoute: ClinicalNotesLazyRoute,
   HeartScoreLazyRoute: HeartScoreLazyRoute,
 }
 
@@ -142,6 +174,7 @@ export const routeTree = rootRoute
         "/",
         "/acute-one",
         "/alt-test",
+        "/clinical-notes",
         "/heart-score"
       ]
     },
@@ -153,6 +186,9 @@ export const routeTree = rootRoute
     },
     "/alt-test": {
       "filePath": "alt-test.lazy.jsx"
+    },
+    "/clinical-notes": {
+      "filePath": "clinical-notes.lazy.jsx"
     },
     "/heart-score": {
       "filePath": "heart-score.lazy.jsx"

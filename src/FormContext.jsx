@@ -17,7 +17,17 @@ export const FormProvider = ({ children }) => {
         history: "",
         heartScoreCalculated: false,
         heartScore: null,
-        riskFactors: []
+        riskFactors: [],
+        stressTestCriteria: [
+            { key: "cad", label: "Known obstructive coronary artery disease (>50% stenosis) or prior coronary revascularization", checked: false },
+            { key: "irreg", label: "Frequent ectopy/irregular heart rate or atrial fibrillation", checked: false },
+            { key: "iodinatedAllergy", label: "Iodinated contrast allergy", checked: false },
+            { key: "noHold", label: "Can't hold breath for 10 seconds", checked: false },
+            { key: "cannotWalk", label: "Cannot walk on a treadmill to peak stress", checked: false },
+            { key: "leftBlock", label: "Left bundle branch block", checked: false },
+            { key: "severeDisease", label: "Severe reactive airway disease with wheezing on examination", checked: false },
+            { key: "block", label: "Advanced heart block", checked: false },
+        ]
     };
     const [formData, setFormData] = useState(initialState);
     const resetFormData = () => setFormData(initialState);

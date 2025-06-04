@@ -1,9 +1,16 @@
 import { riskStyles } from './riskStyles.js';
 
-const RiskButton = ({ risk = 'moderate', children, onClick, style = {}, ...props }) => {
+const RiskButton = ({ risk = 'moderate', children, onClick, style = {}, containerStyle = {}, ...props }) => {
   const s = riskStyles[risk];
   return (
-    <div className="btn-container" style={{ width: '100%' }}>
+    <div className="btn-container" style={{ 
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: '16px',
+      ...containerStyle 
+    }}>
       <button
         className="btn-standard"
         style={{
@@ -15,6 +22,7 @@ const RiskButton = ({ risk = 'moderate', children, onClick, style = {}, ...props
           fontSize: '1.1rem',
           fontWeight: 700,
           width: '100%',
+          maxWidth: '300px',
           margin: '0 auto',
           cursor: 'pointer',
           boxShadow: s.shadow,

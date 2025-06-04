@@ -16,46 +16,11 @@ function LandingPage() {
   const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(pointer: coarse)').matches
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      minWidth: '100vw',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #f3f0ff 0%, #e0e7ff 100%)',
-      padding: 0,
-    }}>
-      {/* Animation keyframes for pulse */}
-      <style>{`
-        @keyframes acutePulse {
-          0% { box-shadow: 0 0 0 0 rgba(123,44,191,0.18); }
-          70% { box-shadow: 0 0 0 12px rgba(123,44,191,0); }
-          100% { box-shadow: 0 0 0 0 rgba(123,44,191,0.18); }
-        }
-      `}</style>
-      <div style={{
-        background: 'rgba(255,255,255,0.92)',
-        borderRadius: 24,
-        boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.12)',
-        padding: '48px 32px 40px 32px',
-        maxWidth: 440,
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 32,
-      }}>
-        <h1 style={{
-          fontSize: '2.6rem',
-          fontWeight: 800,
-          color: '#7B2CBF',
-          margin: 0,
-          letterSpacing: '-1px',
-          textAlign: 'center',
-          textShadow: '0 2px 8px #7B2CBF11',
-        }}>
-          SCiPP Chest Pain Pathway
-        </h1>
+    <div className="card-container">
+      <div className="card">
+        <header className="card-header">
+          <h1>SCiPP Chest Pain Pathway</h1>
+        </header>
         <div style={{
           fontSize: '1.15rem',
           color: '#444',
@@ -114,49 +79,27 @@ function LandingPage() {
             <b>Disclosure:</b> This app is meant as a decision pathway based on national and international guidelines but is not meant to supplant clinical judgment.
           </div>
         </div>
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 24, marginTop: 12 }}>
+        <div className="card-section" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 24, marginTop: 12 }}>
           <button
             onClick={() => navigate({ to: '/acute-one' })}
+            className="card-button card-hover"
             style={{
-              width: '100%',
-              padding: '28px 0',
               background: 'linear-gradient(90deg, #7B2CBF 0%, #1976d2 100%)',
               color: '#fff',
-              fontWeight: 700,
-              fontSize: '1.25rem',
-              border: 'none',
-              borderRadius: 12,
               boxShadow: '0 2px 12px #7B2CBF22',
-              cursor: 'pointer',
-              marginBottom: 0,
-              transition: 'background 0.2s, box-shadow 0.2s',
-              letterSpacing: '0.01em',
-              outline: 'none',
               animation: 'acutePulse 1.5s infinite',
             }}
-            onMouseDown={e => e.currentTarget.style.filter = 'brightness(0.97)'}
-            onMouseUp={e => e.currentTarget.style.filter = 'none'}
-            onMouseLeave={e => e.currentTarget.style.filter = 'none'}
           >
             Acute Chest Pain
           </button>
           <div style={{ position: 'relative', width: '100%' }}>
             <button
+              className="card-button card-disabled"
               style={{
-                width: '100%',
-                padding: '28px 0',
                 background: '#e0e0e0',
                 color: '#222',
-                fontWeight: 600,
-                fontSize: '1.22rem',
-                border: 'none',
-                borderRadius: 12,
                 boxShadow: '0 2px 8px #bbb3',
-                cursor: 'not-allowed',
                 opacity: 0.85,
-                position: 'relative',
-                outline: 'none',
-                letterSpacing: '0.01em',
               }}
               onMouseEnter={() => !isMobile && setShowTooltip(true)}
               onMouseLeave={() => !isMobile && setShowTooltip(false)}
