@@ -1,7 +1,9 @@
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
-const { OpenAI } = require("openai");
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { OpenAI } from "openai";
+
+dotenv.config();
 
 console.log("OPENAI_API_KEY:", process.env.OPENAI_API_KEY);
 

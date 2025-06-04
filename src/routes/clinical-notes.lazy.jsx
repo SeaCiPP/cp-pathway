@@ -22,7 +22,7 @@ function ClinicalNotes() {
       setNote("");
       setCopied(false);
       try {
-        const response = await fetch("http://localhost:5001/api/generate-note", {
+        const response = await fetch("https://cp-pathway.onrender.com/api/generate-note", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
