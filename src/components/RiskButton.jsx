@@ -46,7 +46,7 @@ const RiskButton = ({ risk = 'moderate', children, onClick, style = {}, containe
         {...props}
       >
         <span style={{ fontSize: '1.3em', animation: 'iconBounce 1.5s infinite', color: s.iconColor }}>{s.icon}</span>
-        {children || (risk === 'low' ? 'Low Risk' : risk === 'high' ? 'High Risk' : 'Moderate Risk')}
+        {children || (risk === 'low' ? 'Low Risk' : risk === 'high' ? 'High Risk' : 'Intermediate Risk')}
       </button>
     </div>
   );

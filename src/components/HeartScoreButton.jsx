@@ -10,7 +10,7 @@ const HeartScoreButton = ({ heartScore, heartScoreCalculated, heartScoreRef, onA
     let scoreColor = '#7B2CBF'; // default purple
     let scoreBg = '#f8f4ff';
     let buttonBg = '#E2B93B';
-    let buttonText = 'Moderate Risk';
+    let buttonText = 'Intermediate Risk';
     let buttonIcon = '⚠️';
     if (heartScore < 4) {
         scoreColor = '#219653'; // green
@@ -22,7 +22,7 @@ const HeartScoreButton = ({ heartScore, heartScoreCalculated, heartScoreRef, onA
         scoreColor = '#E2B93B'; // yellow
         scoreBg = '#E2B93B';
         buttonBg = '#E2B93B';
-        buttonText = 'Moderate Risk';
+        buttonText = 'Intermediate Risk';
         buttonIcon = '⚠️';
     } else if (heartScore >= 7) {
         scoreColor = '#D7263D'; // red
