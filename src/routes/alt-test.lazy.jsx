@@ -26,8 +26,8 @@ function AltTesting() {
 
     const allTests = [
         { name: 'Coronary CT Angiography (CCTA)', type: 'imaging' },
-        { name: 'Treadmill Electrocardiogram', type: 'treadmill' },
-        { name: 'Dobutamine Electrocardiogram', type: 'dobutamine' },
+        { name: 'Treadmill Echocardiogram', type: 'treadmill' },
+        { name: 'Dobutamine Stress Echocardiogram', type: 'dobutamine' },
         { name: 'Treadmill Nuclear Perfusion (SPECT)', type: 'treadmill' },
         { name: 'Vasodilator Nuclear Perfusion (SPECT)', type: 'vasodilator' },
         { name: 'Dobutamine Nuclear Perfusion (SPECT)', type: 'dobutamine' },
