@@ -1,1 +1,0 @@
-import{r as i}from"./index-Bnpwcqss.js";function r(e=600){const[t,s]=i.useState(typeof window<"u"?window.innerWidth<=e:!1);return i.useEffect(()=>{function n(){s(window.innerWidth<=e)}return window.addEventListener("resize",n),()=>window.removeEventListener("resize",n)},[e]),t}export{r as u};
