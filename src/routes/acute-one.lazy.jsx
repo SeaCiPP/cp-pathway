@@ -52,7 +52,7 @@ const fadeOutDownStyle = {
 function AcuteOne() {
     // for all user inputs
     const { formData, setFormData, resetFormData } = useForm();
-    
+
     // saving ranks for troponin
     const [categories, setCategories] = useState({
         tropZero: null,
@@ -79,7 +79,7 @@ function AcuteOne() {
         if (formData.heartScoreCalculated) {
             // Small delay to ensure the DOM has updated
             setTimeout(() => {
-                heartScoreRef.current?.scrollIntoView({ 
+                heartScoreRef.current?.scrollIntoView({
                     behavior: 'smooth',
                     block: 'center'
                 });
@@ -101,7 +101,7 @@ function AcuteOne() {
                 // Reset risk first
                 setRisk(null);
                 setRiskSource(null);
-                
+
                 // Recalculate risk with new duration
                 setTimeout(() => {
                     if (formData.tropType === "it") {
@@ -109,7 +109,7 @@ function AcuteOne() {
                         const tropValue = parseFloat(formData.tropZero);
                         const newDuration = parseFloat(value);
                         const lowThreshold = 0.04; // IT threshold
-                        
+
                         if (tropValue < lowThreshold && newDuration > 3) {
                             setRisk(1);
                             setRiskSource("tropZero");
@@ -125,7 +125,7 @@ function AcuteOne() {
                         const values = troponinTests[formData.tropTest];
                         if (values) {
                             const lowThreshold = parseFloat(values[0]);
-                            
+
                             if (tropValue < lowThreshold && newDuration > 3) {
                                 setRisk(1);
                                 setRiskSource("tropZero");
@@ -140,7 +140,7 @@ function AcuteOne() {
             }
         }
     };
-    
+
     // handles to troponin levels & assigns categories 
     const handleTropChange = (field) => (e) => {
         const value = e.target.value;
@@ -174,17 +174,17 @@ function AcuteOne() {
                     }));
                 }
                 return;
-        }
+            }
 
-        let category = null;
-        if (formData.tropType === "it") {
-            category = checkITTrop(field, value);
-        } else if (formData.tropType === "hs") {
-            category = checkTrop(field, value);
-        }
+            let category = null;
+            if (formData.tropType === "it") {
+                category = checkITTrop(field, value);
+            } else if (formData.tropType === "hs") {
+                category = checkTrop(field, value);
+            }
 
-        if (category !== null) {
-            setCategories((prev) => ({ ...prev, [field]: category }));
+            if (category !== null) {
+                setCategories((prev) => ({ ...prev, [field]: category }));
             }
         }
     };
@@ -202,14 +202,28 @@ function AcuteOne() {
             const lowThreshold = parseFloat(values[0]);
             const highThreshold = parseFloat(values[3]);
 
+            // Beckman Coulter specific logic for intermediate range (5-49 ng/L)
+            if (formData.tropTest === "BeckmanCoulter" && tropValue >= 5 && tropValue <= 49) {
+                // For intermediate range, always proceed to 1-hour testing regardless of duration
+                console.log('Setting intermediate for tropZero - Beckman Coulter intermediate range, proceed to 1hr testing');
+                setRisk(null);
+                setRiskSource(null);
+                return 2; // Intermediate - proceed to 1-hour testing
+            }
+
             if (tropValue < lowThreshold) {
+                // Check duration for very low troponin (strictly less than threshold)
                 if (parseFloat(formData.duration) > 3) {
-                    console.log('Setting risk 1 for tropZero');
+                    console.log('Setting risk 1 for tropZero - very low troponin with duration >3hrs');
                     setRisk(1);
                     setRiskSource("tropZero");
-                    return 1;
+                    return 1; // Low Risk - direct path per flowchart
                 }
-                return 1; // very low
+                // Duration ≤3 hours - proceed to 1-hour testing
+                console.log('Setting very low for tropZero - proceed to 1hr testing (duration ≤3hrs)');
+                setRisk(null);
+                setRiskSource(null);
+                return 1; // very low - but continue to 1-hour testing
             } else if (tropValue >= lowThreshold && tropValue < highThreshold) {
                 console.log('Setting risk null for tropZero intermediate');
                 setRisk(null);
@@ -221,8 +235,8 @@ function AcuteOne() {
                 setRiskSource("tropZero");
                 return 3;
             }
-        // ONE HOUR TROP delta
-        } else if (field === "tropOne" ) {
+            // ONE HOUR TROP delta
+        } else if (field === "tropOne") {
             const tropValue = parseFloat(trop);
             const initialValue = parseFloat(formData.tropZero);
             const delta = tropValue - initialValue;
@@ -236,6 +250,46 @@ function AcuteOne() {
             console.log('deltaThreshold:', deltaThreshold);
             console.log('highDeltaThreshold:', highDeltaThreshold);
             console.log('values array:', values);
+
+            // Beckman Coulter specific flowchart logic
+            if (formData.tropTest === "BeckmanCoulter") {
+                // Case 1: Initial troponin was in intermediate range (5-49 ng/L)
+                if (initialValue >= 5 && initialValue <= 49) {
+                    // Flowchart criteria: <5 ng/L AND no Δ >4 ng/L from prior
+                    if (tropValue < 5 && delta <= 4) {
+                        console.log('TRIGGERING LOW RISK for tropOne - Beckman Coulter intermediate range criteria met');
+                        setRisk(1);
+                        setRiskSource("tropOne");
+                        return 1; // Low Risk per flowchart
+                    } else {
+                        console.log('All other cases for tropOne - Beckman Coulter intermediate range');
+                        setRisk(null);
+                        setRiskSource(null);
+                        return 2; // Continue to further evaluation
+                    }
+                }
+                // Case 2: Initial troponin was exactly at threshold (4 ng/L)
+                else if (initialValue === 4) {
+                    // Flowchart criteria: <5 ng/L AND no Δ >4 ng/L from prior
+                    if (tropValue < 5 && delta <= 4) {
+                        console.log('TRIGGERING LOW RISK for tropOne - Beckman Coulter threshold case criteria met');
+                        setRisk(1);
+                        setRiskSource("tropOne");
+                        return 1; // Low Risk per flowchart
+                    } else {
+                        console.log('All other cases for tropOne - Beckman Coulter threshold case');
+                        setRisk(null);
+                        setRiskSource(null);
+                        return 2; // Continue to further evaluation
+                    }
+                }
+                // Case 3: Initial troponin was very low (<4 ng/L)
+                else if (initialValue < 4) {
+                    // For very low initial troponin, use regular delta logic
+                    // This will be handled by the regular logic below
+                    console.log('Very low initial troponin - using regular delta logic');
+                }
+            }
 
             // Calculate what the initial category would be using current values
             const lowThreshold = parseFloat(values[0]);
@@ -274,7 +328,7 @@ function AcuteOne() {
             setRisk(null);
             setRiskSource(null);
             return 2;
-        // THREE HOUR TROP delta
+            // THREE HOUR TROP delta
         } else if (field === "tropThree") {
             const tropValue = parseFloat(trop);
             const initialValue = parseFloat(formData.tropZero);
@@ -322,7 +376,7 @@ function AcuteOne() {
     const checkITTrop = (field, trop) => {
         const values = troponinTests["IT"];
         const tropValue = parseFloat(trop);
-        
+
         const lowThreshold = parseFloat(values[0]);
         const highThreshold = parseFloat(values[3]);
 
@@ -352,7 +406,7 @@ function AcuteOne() {
     // handles ecg selection
     const handleEcgChange = (e) => {
         const value = e.target.value;
-        
+
         if (value === "Option 4: STEMI") {
             setIsTransitioning(true);
             setTimeout(() => {
@@ -377,14 +431,14 @@ function AcuteOne() {
                 }, 300);
             }, 300);
         } else {
-            setFormData((prev) => ({...prev, ecg: value,}));
+            setFormData((prev) => ({ ...prev, ecg: value, }));
         }
     }
 
     // handles other non-numeric inputs
     const handleChange = (field) => (e) => {
         const value = e.target.value;
-        
+
         // If changing troponin type, reset all troponin-related data with smooth transition
         if (field === "tropType") {
             // Reset all states immediately for smooth transitions
@@ -395,9 +449,9 @@ function AcuteOne() {
                 tropOne: null,
                 tropThree: null
             });
-            
-            setFormData((prev) => ({ 
-                ...prev, 
+
+            setFormData((prev) => ({
+                ...prev,
                 [field]: value,
                 tropTest: "", // Reset to empty to show placeholder
                 tropZero: "",
@@ -407,7 +461,7 @@ function AcuteOne() {
         } else if (field === "tropTest") {
             // If changing assay, update it and recalculate risk for existing troponin values
             setFormData((prev) => ({ ...prev, [field]: value }));
-            
+
             // Reset risk and categories first
             setRisk(null);
             setRiskSource(null);
@@ -416,7 +470,7 @@ function AcuteOne() {
                 tropOne: null,
                 tropThree: null
             });
-            
+
             // Recalculate risk for existing troponin values with new assay
             setTimeout(() => {
                 // Create a helper function that uses the new assay value
@@ -432,14 +486,28 @@ function AcuteOne() {
                         const lowThreshold = parseFloat(values[0]);
                         const highThreshold = parseFloat(values[3]);
 
+                        // Beckman Coulter specific logic for intermediate range (5-49 ng/L)
+                        if (value === "BeckmanCoulter" && parsedTropValue >= 5 && parsedTropValue <= 49) {
+                            // For intermediate range, always proceed to 1-hour testing regardless of duration
+                            console.log('Setting intermediate for tropZero with new assay - Beckman Coulter intermediate range, proceed to 1hr testing');
+                            setRisk(null);
+                            setRiskSource(null);
+                            return 2; // Intermediate - proceed to 1-hour testing
+                        }
+
                         if (parsedTropValue < lowThreshold) {
+                            // Check duration for very low troponin (strictly less than threshold)
                             if (parseFloat(formData.duration) > 3) {
-                                console.log('Setting risk 1 for tropZero with new assay');
+                                console.log('Setting risk 1 for tropZero with new assay - very low troponin with duration >3hrs');
                                 setRisk(1);
                                 setRiskSource("tropZero");
-                                return 1;
+                                return 1; // Low Risk - direct path per flowchart
                             }
-                            return 1; // very low
+                            // Duration ≤3 hours - proceed to 1-hour testing
+                            console.log('Setting very low for tropZero with new assay - proceed to 1hr testing (duration ≤3hrs)');
+                            setRisk(null);
+                            setRiskSource(null);
+                            return 1; // very low - but continue to 1-hour testing
                         } else if (parsedTropValue >= lowThreshold && parsedTropValue < highThreshold) {
                             console.log('Setting risk null for tropZero intermediate with new assay');
                             setRisk(null);
@@ -457,6 +525,49 @@ function AcuteOne() {
                         const lowThreshold = parseFloat(values[1]);
                         const highThreshold = parseFloat(values[4]);
                         const deltaThreshold = parseFloat(values[6]);
+
+                        // Beckman Coulter specific flowchart logic
+                        if (value === "BeckmanCoulter") {
+                            const tropZeroValue = parseFloat(formData.tropZero);
+                            // Case 1: Initial troponin was in intermediate range (5-49 ng/L)
+                            if (tropZeroValue >= 5 && tropZeroValue <= 49) {
+                                const delta = parsedTropValue - tropZeroValue;
+                                // Flowchart criteria: <5 ng/L AND no Δ >4 ng/L from prior
+                                if (parsedTropValue < 5 && delta <= 4) {
+                                    console.log('Setting risk 1 for tropOne with new assay - Beckman Coulter intermediate range criteria met');
+                                    setRisk(1);
+                                    setRiskSource("tropOne");
+                                    return 1; // Low Risk per flowchart
+                                } else {
+                                    console.log('All other cases for tropOne with new assay - Beckman Coulter intermediate range');
+                                    setRisk(null);
+                                    setRiskSource(null);
+                                    return 2; // Continue to further evaluation
+                                }
+                            }
+                            // Case 2: Initial troponin was exactly at threshold (4 ng/L)
+                            else if (tropZeroValue === 4) {
+                                const delta = parsedTropValue - tropZeroValue;
+                                // Flowchart criteria: <5 ng/L AND no Δ >4 ng/L from prior
+                                if (parsedTropValue < 5 && delta <= 4) {
+                                    console.log('Setting risk 1 for tropOne with new assay - Beckman Coulter threshold case criteria met');
+                                    setRisk(1);
+                                    setRiskSource("tropOne");
+                                    return 1; // Low Risk per flowchart
+                                } else {
+                                    console.log('All other cases for tropOne with new assay - Beckman Coulter threshold case');
+                                    setRisk(null);
+                                    setRiskSource(null);
+                                    return 2; // Continue to further evaluation
+                                }
+                            }
+                            // Case 3: Initial troponin was very low (<4 ng/L)
+                            else if (tropZeroValue < 4) {
+                                // For very low initial troponin, use regular delta logic
+                                // This will be handled by the regular logic below
+                                console.log('Very low initial troponin with new assay - using regular delta logic');
+                            }
+                        }
 
                         if (parsedTropValue < lowThreshold) {
                             // Check delta
@@ -596,388 +707,388 @@ function AcuteOne() {
                     </Link>
                 </header>
                 {formData.ecg === "Option 4: STEMI" ? (
-                  <>
-                    <div className="card-content-grid">
-                      <div className="left-col" style={{ width: '100%' }}>
-                        <SectionHeader>ECG</SectionHeader>
-                        <div style={{ marginBottom: 24, marginTop: 20 }}>
-                          <DropDown 
-                              value={formData.ecg} onChange={handleEcgChange}
-                              itemone="Option 1: Normal ECG"
-                              itemtwo="Option 2: Non-specific repolarization abnormalities"
-                              itemthree="Option 3: ST segment depressions (not due to LBBB/LVH)"
-                              itemfour="Option 4: STEMI"
-                              label={<span style={{ color: '#222' }}>Select ECG Result</span>}
-                              placeholder="Select ECG Result"
-                              style={{ width: '100%', color: '#111' }}
-                          />
+                    <>
+                        <div className="card-content-grid">
+                            <div className="left-col" style={{ width: '100%' }}>
+                                <SectionHeader>ECG</SectionHeader>
+                                <div style={{ marginBottom: 24, marginTop: 20 }}>
+                                    <DropDown
+                                        value={formData.ecg} onChange={handleEcgChange}
+                                        itemone="Option 1: Normal ECG"
+                                        itemtwo="Option 2: Non-specific repolarization abnormalities"
+                                        itemthree="Option 3: ST segment depressions (not due to LBBB/LVH)"
+                                        itemfour="Option 4: STEMI"
+                                        label={<span style={{ color: '#222' }}>Select ECG Result</span>}
+                                        placeholder="Select ECG Result"
+                                        style={{ width: '100%', color: '#111' }}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="stemi-btn-row">
-                      <Button
-                        image="warning"
-                        text="Use Institution Specific STEMI Protocol"
-                        style={{ 
-                          backgroundColor: "#ff0000", 
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "12px",
-                          cursor: "pointer",
-                          width: '100%',
-                          minHeight: '56px',
-                          fontSize: '1.1rem',
-                          fontWeight: 600,
-                          transition: "all 0.2s ease-in-out",
-                          animation: "pulse 0.7s infinite",
-                          boxShadow: "0 2px 12px rgba(255, 0, 0, 0.15)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: "10px"
-                        }}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="card-content-grid">
-                      <div className="left-col">
-                        {/* ECG Section */}
-                        <SectionHeader>ECG</SectionHeader>
-                        <div style={{ marginBottom: 24, marginTop: 20 }}>
-                            <DropDown 
-                                value={formData.ecg} onChange={handleEcgChange}
-                                itemone="Option 1: Normal ECG"
-                                itemtwo="Option 2: Non-specific repolarization abnormalities"
-                                itemthree="Option 3: ST segment depressions (not due to LBBB/LVH)"
-                                itemfour="Option 4: STEMI"
-                                label={<span style={{ color: '#222' }}>Select ECG Result</span>}
-                                placeholder="Select ECG Result"
-                                style={{ width: '100%', color: '#111' }}
+                        <div className="stemi-btn-row">
+                            <Button
+                                image="warning"
+                                text="Use Institution Specific STEMI Protocol"
+                                style={{
+                                    backgroundColor: "#ff0000",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: "12px",
+                                    cursor: "pointer",
+                                    width: '100%',
+                                    minHeight: '56px',
+                                    fontSize: '1.1rem',
+                                    fontWeight: 600,
+                                    transition: "all 0.2s ease-in-out",
+                                    animation: "pulse 0.7s infinite",
+                                    boxShadow: "0 2px 12px rgba(255, 0, 0, 0.15)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "10px"
+                                }}
                             />
                         </div>
-                        {formData.ecg === "Option 4: STEMI" ? (
-                            <div style={{ width: '100%', marginTop: 24, display: 'flex', justifyContent: 'center' }}>
-                                <Button
-                                    image="warning"
-                                    text="Use Institution Specific STEMI Protocol"
-                                    style={{ 
-                                        backgroundColor: "#ff0000", 
-                                        color: "#fff",
-                                        border: "none",
-                                        borderRadius: "8px",
-                                        cursor: "pointer",
-                                        width: '100%',
-                                        minHeight: '48px',
-                                        fontSize: '1.1rem',
-                                        fontWeight: 600,
-                                        opacity: isTransitioning ? 0 : 1,
-                                        transition: "all 0.2s ease-in-out",
-                                        animation: "pulse 0.7s infinite",
-                                        boxShadow: "0 2px 12px rgba(255, 0, 0, 0.15)",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        gap: "10px"
-                                    }}
-                                />
-                            </div>
-                        ) : (
-                            <>
-                                <hr style={{ border: 0, borderTop: '1.5px solid #e0e0e0', margin: '40px 0' }} />
-                                {/* Patient Info Section */}
-                                <SectionHeader>Patient Info</SectionHeader>
-                                <div style={{ marginBottom: 32, marginTop: 20 }}>
-                                    <Input
-                                        value={formData.age}
-                                        onChange={handleNumChange("age")}
-                                        label={<span style={{ color: '#222' }}>Patient Age (years)</span>}
+                    </>
+                ) : (
+                    <>
+                        <div className="card-content-grid">
+                            <div className="left-col">
+                                {/* ECG Section */}
+                                <SectionHeader>ECG</SectionHeader>
+                                <div style={{ marginBottom: 24, marginTop: 20 }}>
+                                    <DropDown
+                                        value={formData.ecg} onChange={handleEcgChange}
+                                        itemone="Option 1: Normal ECG"
+                                        itemtwo="Option 2: Non-specific repolarization abnormalities"
+                                        itemthree="Option 3: ST segment depressions (not due to LBBB/LVH)"
+                                        itemfour="Option 4: STEMI"
+                                        label={<span style={{ color: '#222' }}>Select ECG Result</span>}
+                                        placeholder="Select ECG Result"
+                                        style={{ width: '100%', color: '#111' }}
                                     />
                                 </div>
-                                <div style={{ marginBottom: 32 }}>
-                                    <Input
-                                        value={formData.duration}
-                                        onChange={handleNumChange("duration")}
-                                        label={<span style={{ color: '#222' }}>Chest Pain Duration (hours)</span>}
-                                    />
-                                </div>
-                            </>
-                        )}
-                      </div>
-                      <div className="right-col" style={{ position: 'relative' }}>
-                        {/* Horizontal divider for mobile only, before Troponin Testing header */}
-                        {isMobile && <div className="horizontal-divider" aria-hidden="true"></div>}
-                        {/* Overlay if left column not filled */}
-                        {!leftRequiredFilled && (
-                          <div className="right-col-overlay">
-                            <div className="right-col-overlay-message">
-                              {isMobile
-                                ? <>Please complete the above sections first.<br />(ECG, Age, and Chest Pain Duration)</>
-                                : <>Please complete the left column first.<br />(ECG, Age, and Chest Pain Duration)</>
-                              }
+                                {formData.ecg === "Option 4: STEMI" ? (
+                                    <div style={{ width: '100%', marginTop: 24, display: 'flex', justifyContent: 'center' }}>
+                                        <Button
+                                            image="warning"
+                                            text="Use Institution Specific STEMI Protocol"
+                                            style={{
+                                                backgroundColor: "#ff0000",
+                                                color: "#fff",
+                                                border: "none",
+                                                borderRadius: "8px",
+                                                cursor: "pointer",
+                                                width: '100%',
+                                                minHeight: '48px',
+                                                fontSize: '1.1rem',
+                                                fontWeight: 600,
+                                                opacity: isTransitioning ? 0 : 1,
+                                                transition: "all 0.2s ease-in-out",
+                                                animation: "pulse 0.7s infinite",
+                                                boxShadow: "0 2px 12px rgba(255, 0, 0, 0.15)",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                gap: "10px"
+                                            }}
+                                        />
+                                    </div>
+                                ) : (
+                                    <>
+                                        <hr style={{ border: 0, borderTop: '1.5px solid #e0e0e0', margin: '40px 0' }} />
+                                        {/* Patient Info Section */}
+                                        <SectionHeader>Patient Info</SectionHeader>
+                                        <div style={{ marginBottom: 32, marginTop: 20 }}>
+                                            <Input
+                                                value={formData.age}
+                                                onChange={handleNumChange("age")}
+                                                label={<span style={{ color: '#222' }}>Patient Age (years)</span>}
+                                            />
+                                        </div>
+                                        <div style={{ marginBottom: 32 }}>
+                                            <Input
+                                                value={formData.duration}
+                                                onChange={handleNumChange("duration")}
+                                                label={<span style={{ color: '#222' }}>Chest Pain Duration (hours)</span>}
+                                            />
+                                        </div>
+                                    </>
+                                )}
                             </div>
-                          </div>
-                        )}
-                        <div className={leftRequiredFilled ? '' : 'right-col-disabled'}>
-                          {/* Troponin Testing Section */}
-                          <SectionHeader>Troponin Testing</SectionHeader>
-                          {formData.ecg !== "Option 4: STEMI" && (
-                              <>
-                                  <div className="mcq-container" style={{ marginBottom: 32 }}>
-                                      <label style={{ fontWeight: 500, fontSize: '1rem', marginBottom: 16, display: 'block', color: '#222', paddingLeft: 0 }}>Troponin Test Type</label>
-                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
-                                          <div 
-                                              onClick={() => !formData.duration ? null : handleChange("tropType")({ target: { value: "hs" } })}
-                                              style={{
-                                                  padding: '16px 20px',
-                                                  border: `2px solid ${formData.tropType === "hs" ? '#7B2CBF' : '#e0e0e0'}`,
-                                                  borderRadius: '12px',
-                                                  backgroundColor: formData.tropType === "hs" ? '#f8f4ff' : '#fff',
-                                                  cursor: !formData.duration ? 'not-allowed' : 'pointer',
-                                                  opacity: !formData.duration ? 0.5 : 1,
-                                                  transition: 'all 0.2s ease-in-out',
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  gap: '12px'
-                                              }}
-                                          >
-                                              <div style={{
-                                                  width: '20px',
-                                                  height: '20px',
-                                                  borderRadius: '50%',
-                                                  border: `2px solid ${formData.tropType === "hs" ? '#7B2CBF' : '#ccc'}`,
-                                                  backgroundColor: formData.tropType === "hs" ? '#7B2CBF' : '#fff',
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  justifyContent: 'center',
-                                                  flexShrink: 0
-                                              }}>
-                                                  {formData.tropType === "hs" && (
-                                                      <div style={{
-                                                          width: '8px',
-                                                          height: '8px',
-                                                          borderRadius: '50%',
-                                                          backgroundColor: '#fff'
-                                                      }} />
-                                                  )}
-                                              </div>
-                                              <span style={{ 
-                                                  color: formData.tropType === "hs" ? '#7B2CBF' : '#222',
-                                                  fontWeight: formData.tropType === "hs" ? 'bold' : 'normal',
-                                                  fontSize: '1rem'
-                                              }}>
-                                                  HS-Troponin (ng/L)
-                                              </span>
-                                          </div>
-                                          <div 
-                                              onClick={() => !formData.duration ? null : handleChange("tropType")({ target: { value: "it" } })}
-                                              style={{
-                                                  padding: '16px 20px',
-                                                  border: `2px solid ${formData.tropType === "it" ? '#7B2CBF' : '#e0e0e0'}`,
-                                                  borderRadius: '12px',
-                                                  backgroundColor: formData.tropType === "it" ? '#f8f4ff' : '#fff',
-                                                  cursor: !formData.duration ? 'not-allowed' : 'pointer',
-                                                  opacity: !formData.duration ? 0.5 : 1,
-                                                  transition: 'all 0.2s ease-in-out',
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  gap: '12px'
-                                              }}
-                                          >
-                                              <div style={{
-                                                  width: '20px',
-                                                  height: '20px',
-                                                  borderRadius: '50%',
-                                                  border: `2px solid ${formData.tropType === "it" ? '#7B2CBF' : '#ccc'}`,
-                                                  backgroundColor: formData.tropType === "it" ? '#7B2CBF' : '#fff',
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  justifyContent: 'center',
-                                                  flexShrink: 0
-                                              }}>
-                                                  {formData.tropType === "it" && (
-                                                      <div style={{
-                                                          width: '8px',
-                                                          height: '8px',
-                                                          borderRadius: '50%',
-                                                          backgroundColor: '#fff'
-                                                      }} />
-                                                  )}
-                                              </div>
-                                              <span style={{ 
-                                                  color: formData.tropType === "it" ? '#7B2CBF' : '#222',
-                                                  fontWeight: formData.tropType === "it" ? 'bold' : 'normal',
-                                                  fontSize: '1rem'
-                                              }}>
-                                                  Troponin I/T (ng/mL)
-                                              </span>
-                                          </div>
-                                      </div>
-                                      {/* Prompt inside MCQ container */}
-                                      <div style={(!formData.tropType && !formData.heartScoreCalculated && !risk) ? { ...fadeInStyle, marginTop: 12 } : fadeOutStyle}>
-                                          <div style={{ color: '#888', fontSize: '0.97rem', display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
-                                              <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
-                                              Select a Troponin test type to continue…
-                                          </div>
-                                      </div>
-                                  </div>
-                                  {/* The rest of the Troponin Testing logic and fields remain in the right column */}
-                                  <div style={formData.tropType === "hs" ? fadeInUpStyle : fadeOutDownStyle}>
-                                      <div style={{ marginBottom: 32, width: '100%' }}>
-                                          <DropDown 
-                                              value={formData.tropTest} onChange={handleChange("tropTest")}
-                                              itemone="BeckmanCoulter"
-                                              itemtwo="Roche"
-                                              itemthree="Abbott"
-                                              itemfour="Siemens"
-                                              label={<span style={{ color: '#222' }}>Select Troponin Assay</span>}
-                                              style={{ color: '#222', width: '100%' }}
-                                          />
-                                          <div style={(formData.tropType === 'hs' && !formData.tropTest && !formData.heartScoreCalculated && !risk) ? fadeInStyle : fadeOutStyle}>
-                                              <div style={{ color: '#888', fontSize: '0.97rem', marginTop: 8, display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
-                                                  <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
-                                                  Select a Troponin assay to continue…
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                                  {/* Initial Troponin Level */}
-                                  <div style={((formData.tropType === "hs" && formData.tropTest) || formData.tropType === "it") ? fadeInUpStyle : fadeOutDownStyle}>
-                                      <div style={{ marginBottom: 32, width: '100%' }}>
-                                          <Input
-                                              value={formData.tropZero}
-                                              onChange={handleTropChange("tropZero")}
-                                              disabled={!formData.tropType}
-                                              label={<span style={{ color: '#222' }}>Initial Troponin Level ({formData.tropType === "hs" ? "ng/L" : "ng/mL"})</span>}
-                                          />
-                                          <div style={formData.tropType && (formData.tropType !== 'hs' || formData.tropTest) && !formData.tropZero && !formData.heartScoreCalculated && !risk ? fadeInStyle : fadeOutStyle}>
-                                              <div style={{ color: '#888', fontSize: '0.97rem', marginTop: 2, display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
-                                                  <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
-                                                  Enter a value above to continue Troponin testing…
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                                  {/* ...rest of the Troponin/Heart Score logic remains in the right column... */}
-                                  {formData.tropZero && (categories.tropZero === 1 || categories.tropZero === 2 || formData.heartScoreCalculated) && (
-                                      <>
-                                          {formData.tropType === "hs" && !(risk && riskSource === "tropZero") ? (
-                                              <AnimatedField>
-                                                  <div style={{ marginBottom: 32, width: '100%' }}>
-                                                      <Input
-                                                          value={formData.tropOne}
-                                                          onChange={handleTropChange("tropOne")}
-                                                          label={<span style={{ color: '#222' }}>Troponin at 1 Hour (ng/L)</span>}
-                                                      />
-                                                      {/* Indicator for Troponin at 3 Hours (HS) */}
-                                                      {!formData.tropOne && !formData.heartScoreCalculated && !risk && (
-                                                          <div style={fadeInStyle}>
-                                                              <div style={{ color: '#888', fontSize: '0.97rem', marginTop: 2, display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
-                                                                  <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
-                                                                  Enter a value above to continue Troponin testing…
-                                                              </div>
-                                                          </div>
-                                                      )}
-                                                  </div>
-                                              </AnimatedField>
-                                          ) : formData.tropType === "it" && (!risk || riskSource === "tropThree") && !(risk && riskSource === "tropZero") ? (
-                                              <AnimatedField>
-                                                  <div style={{ marginBottom: 32, width: '100%' }}>
-                                                      <Input
-                                                          value={formData.tropThree}
-                                                          onChange={handleTropChange("tropThree")}
-                                                          label={<span style={{ color: '#222' }}>Troponin at 3 Hours (ng/mL)</span>}
-                                                      />
-                                                      {/* Indicator for Heart Score (IT) */}
-                                                      {!formData.tropThree && !formData.heartScoreCalculated && !risk && (
-                                                          <div style={fadeInStyle}>
-                                                              <div style={{ color: '#888', fontSize: '0.97rem', marginTop: 2, display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
-                                                                  <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
-                                                                  Enter a value above to continue Troponin testing…
-                                                              </div>
-                                                          </div>
-                                                      )}
-                                                  </div>
-                                              </AnimatedField>
-                                          ) : null }
-                                          {formData.tropType === "hs" && formData.tropOne && !(risk && (riskSource === "tropZero" || riskSource === "tropOne")) && (categories.tropOne === 2 || formData.heartScoreCalculated) ? (
-                                              <AnimatedField>
-                                                  <div style={{ marginBottom: 0, width: '100%' }}>
-                                                      <Input
-                                                          value={formData.tropThree}
-                                                          onChange={handleTropChange("tropThree")}
-                                                          label={<span style={{ color: '#222' }}>Troponin at 3 Hours (ng/L)</span>}
-                                                      />
-                                                      {/* Indicator for Heart Score (HS) */}
-                                                      {!formData.tropThree && !formData.heartScoreCalculated && !risk && (
-                                                          <div style={fadeInStyle}>
-                                                              <div style={{ color: '#888', fontSize: '0.97rem', marginTop: 2, display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
-                                                                  <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
-                                                                  Continue to HEART Score…
-                                                              </div>
-                                                          </div>
-                                                      )}
-                                                      {formData.tropThree && (categories.tropThree === 3 || formData.heartScoreCalculated) && risk === null && null}
-                                                  </div>
-                                              </AnimatedField>
-                                          ) : formData.tropType === "it" && formData.tropThree && (categories.tropThree === 2 || formData.heartScoreCalculated) && !risk && null}
-                                      </>
-                                  )}
-                              </>
-                          )}
-                          {/* Place the action button here on mobile */}
-                          {isMobile && (
+                            <div className="right-col" style={{ position: 'relative' }}>
+                                {/* Horizontal divider for mobile only, before Troponin Testing header */}
+                                {isMobile && <div className="horizontal-divider" aria-hidden="true"></div>}
+                                {/* Overlay if left column not filled */}
+                                {!leftRequiredFilled && (
+                                    <div className="right-col-overlay">
+                                        <div className="right-col-overlay-message">
+                                            {isMobile
+                                                ? <>Please complete the above sections first.<br />(ECG, Age, and Chest Pain Duration)</>
+                                                : <>Please complete the left column first.<br />(ECG, Age, and Chest Pain Duration)</>
+                                            }
+                                        </div>
+                                    </div>
+                                )}
+                                <div className={leftRequiredFilled ? '' : 'right-col-disabled'}>
+                                    {/* Troponin Testing Section */}
+                                    <SectionHeader>Troponin Testing</SectionHeader>
+                                    {formData.ecg !== "Option 4: STEMI" && (
+                                        <>
+                                            <div className="mcq-container" style={{ marginBottom: 32 }}>
+                                                <label style={{ fontWeight: 500, fontSize: '1rem', marginBottom: 16, display: 'block', color: '#222', paddingLeft: 0 }}>Troponin Test Type</label>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+                                                    <div
+                                                        onClick={() => !formData.duration ? null : handleChange("tropType")({ target: { value: "hs" } })}
+                                                        style={{
+                                                            padding: '16px 20px',
+                                                            border: `2px solid ${formData.tropType === "hs" ? '#7B2CBF' : '#e0e0e0'}`,
+                                                            borderRadius: '12px',
+                                                            backgroundColor: formData.tropType === "hs" ? '#f8f4ff' : '#fff',
+                                                            cursor: !formData.duration ? 'not-allowed' : 'pointer',
+                                                            opacity: !formData.duration ? 0.5 : 1,
+                                                            transition: 'all 0.2s ease-in-out',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '12px'
+                                                        }}
+                                                    >
+                                                        <div style={{
+                                                            width: '20px',
+                                                            height: '20px',
+                                                            borderRadius: '50%',
+                                                            border: `2px solid ${formData.tropType === "hs" ? '#7B2CBF' : '#ccc'}`,
+                                                            backgroundColor: formData.tropType === "hs" ? '#7B2CBF' : '#fff',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            flexShrink: 0
+                                                        }}>
+                                                            {formData.tropType === "hs" && (
+                                                                <div style={{
+                                                                    width: '8px',
+                                                                    height: '8px',
+                                                                    borderRadius: '50%',
+                                                                    backgroundColor: '#fff'
+                                                                }} />
+                                                            )}
+                                                        </div>
+                                                        <span style={{
+                                                            color: formData.tropType === "hs" ? '#7B2CBF' : '#222',
+                                                            fontWeight: formData.tropType === "hs" ? 'bold' : 'normal',
+                                                            fontSize: '1rem'
+                                                        }}>
+                                                            HS-Troponin (ng/L)
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        onClick={() => !formData.duration ? null : handleChange("tropType")({ target: { value: "it" } })}
+                                                        style={{
+                                                            padding: '16px 20px',
+                                                            border: `2px solid ${formData.tropType === "it" ? '#7B2CBF' : '#e0e0e0'}`,
+                                                            borderRadius: '12px',
+                                                            backgroundColor: formData.tropType === "it" ? '#f8f4ff' : '#fff',
+                                                            cursor: !formData.duration ? 'not-allowed' : 'pointer',
+                                                            opacity: !formData.duration ? 0.5 : 1,
+                                                            transition: 'all 0.2s ease-in-out',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '12px'
+                                                        }}
+                                                    >
+                                                        <div style={{
+                                                            width: '20px',
+                                                            height: '20px',
+                                                            borderRadius: '50%',
+                                                            border: `2px solid ${formData.tropType === "it" ? '#7B2CBF' : '#ccc'}`,
+                                                            backgroundColor: formData.tropType === "it" ? '#7B2CBF' : '#fff',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            flexShrink: 0
+                                                        }}>
+                                                            {formData.tropType === "it" && (
+                                                                <div style={{
+                                                                    width: '8px',
+                                                                    height: '8px',
+                                                                    borderRadius: '50%',
+                                                                    backgroundColor: '#fff'
+                                                                }} />
+                                                            )}
+                                                        </div>
+                                                        <span style={{
+                                                            color: formData.tropType === "it" ? '#7B2CBF' : '#222',
+                                                            fontWeight: formData.tropType === "it" ? 'bold' : 'normal',
+                                                            fontSize: '1rem'
+                                                        }}>
+                                                            Troponin I/T (ng/mL)
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                {/* Prompt inside MCQ container */}
+                                                <div style={(!formData.tropType && !formData.heartScoreCalculated && !risk) ? { ...fadeInStyle, marginTop: 12 } : fadeOutStyle}>
+                                                    <div style={{ color: '#888', fontSize: '0.97rem', display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
+                                                        <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
+                                                        Select a Troponin test type to continue…
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/* The rest of the Troponin Testing logic and fields remain in the right column */}
+                                            <div style={formData.tropType === "hs" ? fadeInUpStyle : fadeOutDownStyle}>
+                                                <div style={{ marginBottom: 32, width: '100%' }}>
+                                                    <DropDown
+                                                        value={formData.tropTest} onChange={handleChange("tropTest")}
+                                                        itemone="BeckmanCoulter"
+                                                        itemtwo="Roche"
+                                                        itemthree="Abbott"
+                                                        itemfour="Siemens"
+                                                        label={<span style={{ color: '#222' }}>Select Troponin Assay</span>}
+                                                        style={{ color: '#222', width: '100%' }}
+                                                    />
+                                                    <div style={(formData.tropType === 'hs' && !formData.tropTest && !formData.heartScoreCalculated && !risk) ? fadeInStyle : fadeOutStyle}>
+                                                        <div style={{ color: '#888', fontSize: '0.97rem', marginTop: 8, display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
+                                                            <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
+                                                            Select a Troponin assay to continue…
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/* Initial Troponin Level */}
+                                            <div style={((formData.tropType === "hs" && formData.tropTest) || formData.tropType === "it") ? fadeInUpStyle : fadeOutDownStyle}>
+                                                <div style={{ marginBottom: 32, width: '100%' }}>
+                                                    <Input
+                                                        value={formData.tropZero}
+                                                        onChange={handleTropChange("tropZero")}
+                                                        disabled={!formData.tropType}
+                                                        label={<span style={{ color: '#222' }}>Initial Troponin Level ({formData.tropType === "hs" ? "ng/L" : "ng/mL"})</span>}
+                                                    />
+                                                    <div style={formData.tropType && (formData.tropType !== 'hs' || formData.tropTest) && !formData.tropZero && !formData.heartScoreCalculated && !risk ? fadeInStyle : fadeOutStyle}>
+                                                        <div style={{ color: '#888', fontSize: '0.97rem', marginTop: 2, display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
+                                                            <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
+                                                            Enter a value above to continue Troponin testing…
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/* ...rest of the Troponin/Heart Score logic remains in the right column... */}
+                                            {formData.tropZero && (categories.tropZero === 1 || categories.tropZero === 2 || formData.heartScoreCalculated) && (
+                                                <>
+                                                    {formData.tropType === "hs" && !(risk && riskSource === "tropZero") ? (
+                                                        <AnimatedField>
+                                                            <div style={{ marginBottom: 32, width: '100%' }}>
+                                                                <Input
+                                                                    value={formData.tropOne}
+                                                                    onChange={handleTropChange("tropOne")}
+                                                                    label={<span style={{ color: '#222' }}>Troponin at 1 Hour (ng/L)</span>}
+                                                                />
+                                                                {/* Indicator for Troponin at 3 Hours (HS) */}
+                                                                {!formData.tropOne && !formData.heartScoreCalculated && !risk && (
+                                                                    <div style={fadeInStyle}>
+                                                                        <div style={{ color: '#888', fontSize: '0.97rem', marginTop: 2, display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
+                                                                            <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
+                                                                            Enter a value above to continue Troponin testing…
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </AnimatedField>
+                                                    ) : formData.tropType === "it" && (!risk || riskSource === "tropThree") && !(risk && riskSource === "tropZero") ? (
+                                                        <AnimatedField>
+                                                            <div style={{ marginBottom: 32, width: '100%' }}>
+                                                                <Input
+                                                                    value={formData.tropThree}
+                                                                    onChange={handleTropChange("tropThree")}
+                                                                    label={<span style={{ color: '#222' }}>Troponin at 3 Hours (ng/mL)</span>}
+                                                                />
+                                                                {/* Indicator for Heart Score (IT) */}
+                                                                {!formData.tropThree && !formData.heartScoreCalculated && !risk && (
+                                                                    <div style={fadeInStyle}>
+                                                                        <div style={{ color: '#888', fontSize: '0.97rem', marginTop: 2, display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
+                                                                            <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
+                                                                            Enter a value above to continue Troponin testing…
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </AnimatedField>
+                                                    ) : null}
+                                                    {formData.tropType === "hs" && formData.tropOne && !(risk && (riskSource === "tropZero" || riskSource === "tropOne")) && (categories.tropOne === 2 || formData.heartScoreCalculated) ? (
+                                                        <AnimatedField>
+                                                            <div style={{ marginBottom: 0, width: '100%' }}>
+                                                                <Input
+                                                                    value={formData.tropThree}
+                                                                    onChange={handleTropChange("tropThree")}
+                                                                    label={<span style={{ color: '#222' }}>Troponin at 3 Hours (ng/L)</span>}
+                                                                />
+                                                                {/* Indicator for Heart Score (HS) */}
+                                                                {!formData.tropThree && !formData.heartScoreCalculated && !risk && (
+                                                                    <div style={fadeInStyle}>
+                                                                        <div style={{ color: '#888', fontSize: '0.97rem', marginTop: 2, display: 'flex', alignItems: 'center', paddingLeft: 4 }}>
+                                                                            <span style={{ fontSize: '1.2em', opacity: 0.7, marginRight: 6 }}>▼</span>
+                                                                            Continue to HEART Score…
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                                {formData.tropThree && (categories.tropThree === 3 || formData.heartScoreCalculated) && risk === null && null}
+                                                            </div>
+                                                        </AnimatedField>
+                                                    ) : formData.tropType === "it" && formData.tropThree && (categories.tropThree === 2 || formData.heartScoreCalculated) && !risk && null}
+                                                </>
+                                            )}
+                                        </>
+                                    )}
+                                    {/* Place the action button here on mobile */}
+                                    {isMobile && (
+                                        risk === 1 && (riskSource === "tropZero" || riskSource === "tropOne" || riskSource === "tropThree") ? (
+                                            <div style={{ width: '100%', marginTop: 32 }}>
+                                                <LowRiskButton style={{ width: '100%' }} />
+                                            </div>
+                                        ) : risk === 3 && (riskSource === "tropZero" || riskSource === "tropOne" || riskSource === "tropThree") ? (
+                                            <div style={{ width: '100%', marginTop: 32 }}>
+                                                <HighRiskButton style={{ width: '100%' }} />
+                                            </div>
+                                        ) : ((formData.tropThree && (categories.tropThree === 3 || formData.heartScoreCalculated) && risk === null) ||
+                                            (formData.tropType === "it" && formData.tropThree && (categories.tropThree === 2 || formData.heartScoreCalculated) && !risk)
+                                        ) ? (
+                                            <div style={{ width: '100%', marginTop: 32 }}>
+                                                <HeartScoreButton
+                                                    heartScore={heartScore}
+                                                    heartScoreCalculated={formData.heartScoreCalculated}
+                                                    heartScoreRef={heartScoreRef}
+                                                    onAction={onHeartScoreAction}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </div>
+                                        ) : null
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        {/* On desktop, keep the button centered at the bottom of the card */}
+                        {!isMobile && (
                             risk === 1 && (riskSource === "tropZero" || riskSource === "tropOne" || riskSource === "tropThree") ? (
-                              <div style={{ width: '100%', marginTop: 32 }}>
-                                <LowRiskButton style={{ width: '100%' }} />
-                              </div>
+                                <div className="bottom-action-btn-container">
+                                    <LowRiskButton style={{ width: '100%' }} />
+                                </div>
                             ) : risk === 3 && (riskSource === "tropZero" || riskSource === "tropOne" || riskSource === "tropThree") ? (
-                              <div style={{ width: '100%', marginTop: 32 }}>
-                                <HighRiskButton style={{ width: '100%' }} />
-                              </div>
-                            ) : ( (formData.tropThree && (categories.tropThree === 3 || formData.heartScoreCalculated) && risk === null) ||
+                                <div className="bottom-action-btn-container">
+                                    <HighRiskButton style={{ width: '100%' }} />
+                                </div>
+                            ) : ((formData.tropThree && (categories.tropThree === 3 || formData.heartScoreCalculated) && risk === null) ||
                                 (formData.tropType === "it" && formData.tropThree && (categories.tropThree === 2 || formData.heartScoreCalculated) && !risk)
-                              ) ? (
-                              <div style={{ width: '100%', marginTop: 32 }}>
-                                <HeartScoreButton 
-                                    heartScore={heartScore}
-                                    heartScoreCalculated={formData.heartScoreCalculated}
-                                    heartScoreRef={heartScoreRef}
-                                    onAction={onHeartScoreAction}
-                                    style={{ width: '100%' }}
-                                />
-                              </div>
+                            ) ? (
+                                <div className="bottom-action-btn-container">
+                                    <HeartScoreButton
+                                        heartScore={heartScore}
+                                        heartScoreCalculated={formData.heartScoreCalculated}
+                                        heartScoreRef={heartScoreRef}
+                                        onAction={onHeartScoreAction}
+                                        style={{ width: '100%' }}
+                                    />
+                                </div>
                             ) : null
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    {/* On desktop, keep the button centered at the bottom of the card */}
-                    {!isMobile && (
-                      risk === 1 && (riskSource === "tropZero" || riskSource === "tropOne" || riskSource === "tropThree") ? (
-                        <div className="bottom-action-btn-container">
-                          <LowRiskButton style={{ width: '100%' }} />
-                        </div>
-                      ) : risk === 3 && (riskSource === "tropZero" || riskSource === "tropOne" || riskSource === "tropThree") ? (
-                        <div className="bottom-action-btn-container">
-                          <HighRiskButton style={{ width: '100%' }} />
-                        </div>
-                      ) : ( (formData.tropThree && (categories.tropThree === 3 || formData.heartScoreCalculated) && risk === null) ||
-                            (formData.tropType === "it" && formData.tropThree && (categories.tropThree === 2 || formData.heartScoreCalculated) && !risk)
-                        ) ? (
-                        <div className="bottom-action-btn-container">
-                          <HeartScoreButton 
-                              heartScore={heartScore}
-                              heartScoreCalculated={formData.heartScoreCalculated}
-                              heartScoreRef={heartScoreRef}
-                              onAction={onHeartScoreAction}
-                              style={{ width: '100%' }}
-                          />
-                        </div>
-                      ) : null
-                    )}
-                  </>
+                        )}
+                    </>
                 )}
             </div>
         </div>
